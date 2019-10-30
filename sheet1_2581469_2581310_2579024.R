@@ -193,11 +193,22 @@ beaver1
 b1temp <- beaver1$temp
 ## g) Calculate the mean and standard deviation of this dataset and plot a normal
 ##    distribution with these parameters.
-
+b1temp_mean = mean(b1temp)
+b1temp_std = sd(b1temp)
+y = dnorm(b1temp, mean = b1temp_mean, sd = b1temp_std)
+plot(b1temp,y)
 ## h) We observe two temparatures (36.91 and 38.13). What's the likelihood that
 ##    these temperatures (or more extreme ones) respectively come 
 ##    from the normal distribution from g)?
-
+#Is the question asking, what's the probability that a randomly sampled temperature be between 36.91 and 38.13?
+#P(36.91 <= X <= 38.13 : X ~ N(b1temp_mean, b1temp_std))
+upperbound = pnorm(38.13, b1temp_mean, b1temp_std)
+lowerbound = 1 - pnorm(36.91, b1temp_mean, b1temp_std)
+upperbound - lowerbound #probabily that a randomly sampled temperature will be between [36.91, 38.13]
 ## i) Use the random sampling function in R to generate 20 random samples from
 ##    the normal distribution from g), and draw a histogram based on this sample.
 ##    Repeat 5 times. What do you observe?
+for i in range(c(1:5)):
+  yr = rnorm(20, b1temp_mean, b1temp_std)
+  hist(yr, plot = TRUE)
+#this part is NOT FINISHED  
