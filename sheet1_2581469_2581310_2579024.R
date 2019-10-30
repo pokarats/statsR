@@ -10,8 +10,8 @@
 ## the assignment graded as complete. 
 
 ## Please write below your (and your teammates') name and matriculation number. 
-## Name:Noon Pokaratsiri Goldstein
-## Matriculation number:2581469
+## Name:Noon Pokaratsiri Goldstein, Pauline Sander
+## Matriculation number:2581469, 2581310
 
 ## Change the name of the file by adding your matriculation numbers
 ## (sheet01_firstID_secondID_thirdID.R)
