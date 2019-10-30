@@ -202,13 +202,15 @@ plot(b1temp,y)
 ##    from the normal distribution from g)?
 #Is the question asking, what's the probability that a randomly sampled temperature be between 36.91 and 38.13?
 #P(36.91 <= X <= 38.13 : X ~ N(b1temp_mean, b1temp_std))
-upperbound = pnorm(38.13, b1temp_mean, b1temp_std)
-lowerbound = 1 - pnorm(36.91, b1temp_mean, b1temp_std)
+upperbound = pnorm(38.13, b1temp_mean, b1temp_std) #P(X <= 38.13; i.e. integral of PDF from x=0 -> x=38.13)
+lowerbound = 1 - pnorm(36.91, b1temp_mean, b1temp_std) # 1 - P(X < 36.13); 1 - integral of PDF from x=0 -> x=36.91
 upperbound - lowerbound #probabily that a randomly sampled temperature will be between [36.91, 38.13]
 ## i) Use the random sampling function in R to generate 20 random samples from
 ##    the normal distribution from g), and draw a histogram based on this sample.
 ##    Repeat 5 times. What do you observe?
-for i in range(c(1:5)):
-  yr = rnorm(20, b1temp_mean, b1temp_std)
-  hist(yr, plot = TRUE)
-#this part is NOT FINISHED  
+for (i in c(1:5)) {
+  random_samples = rnorm(20, b1temp_mean, b1temp_std)
+  hist(random_samples, plot = TRUE)
+}
+#Observations: Only some of the histogram plots look like a normal distribution. Some are multi-modal or
+#have a number of extrem values
