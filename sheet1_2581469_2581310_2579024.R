@@ -152,22 +152,22 @@ nrow(dutchSpeakersDistMeta)
 ##    (will become the x-axis in the plot).
 ##    Get R to generate the range from -5 to 5, by 0.1. Assign this to the 
 ##    variable x.
-
+x = seq(-5,5, by = .1)
 
 ## b) Now we need to obtain the y-values of the plot (the density). We do this 
 ##    using the density function for the normal distribution. 
 ##    Use "help(dnorm)" to find out about the standard functions for the normal 
 ##    distribution.
-
+y = dnorm(x, 0, 1)
 
 ## c) Now use plot() to plot the normal distribution for z values of "x". 
-
+plot(x,y)
 
 ## d) The plot now has a relatively short y-range, and it contains circles 
 ##    instead of a line. 
 ##    Using plot(), specify the y axis to range from 0 to 0.8, and plot a line 
 ##    instead of the circles.
-
+plot(x,y, type="line")
 
 ## e) We want to have a vertical line to represent the mean of our distribution.
 ##    'abline()' can do this for us. Look up help for abline(). 
