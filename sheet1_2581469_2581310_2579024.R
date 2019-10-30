@@ -71,21 +71,32 @@ nrow(dutchSpeakersDistMeta)
 ## d) Let's say we're interested in the age of the speakers included in the 
 ##    corpus, to see whether males and females are distributed equally. 
 ##    Create a boxplot for Sex and AgeYear.
+boxplot(AgeYear ~ Sex, data = dutchSpeakersDistMeta)
+
 
 
 ## e) Does it seem as if either of the two groups has more variability in age?
-
+#yes, the female group has wider variability than the male group. 
 
 ## f) Do you see any outliers in either of the two groups?
-
+#yes, The male group also has a few extreme data points outside of the whiskers in the boxplots
 
 ## g) Now calculate the mean and standard deviation of the AgeYear per group. 
 ##    Do this by creating a subset for each group.
 ##    Do the groups seem to differ much in age?
+library(dplyr)
+dutchSpeakersDistMeta %>% 
+  group_by(Sex) %>%
+  summarise(Mean = mean(AgeYear, na.rm = TRUE))
 
+dutchSpeakersDistMeta %>% 
+  group_by(Sex) %>%
+  summarise(StandardDev = sd(AgeYear, na.rm = TRUE))
+#The two groups seem to have almost the same mean and standard deviation, suggesting that they do not differ
+#much in age.
 
 ## h) What do the whiskers of a boxplot mean?
-
+#The whiskers go from the Q1 and Q3 points of the data to the min and max respectively.
 
 ###############
 ### Exercise 3: Children's stories & dataframes
