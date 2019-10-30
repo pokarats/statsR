@@ -169,7 +169,7 @@ x = seq(-5,5, by = .1)
 ##    using the density function for the normal distribution. 
 ##    Use "help(dnorm)" to find out about the standard functions for the normal 
 ##    distribution.
-y = dnorm(x, 0, 1)
+y = dnorm(x)
 
 ## c) Now use plot() to plot the normal distribution for z values of "x". 
 plot(x,y)
@@ -178,17 +178,19 @@ plot(x,y)
 ##    instead of a line. 
 ##    Using plot(), specify the y axis to range from 0 to 0.8, and plot a line 
 ##    instead of the circles.
-plot(x,y, type="line")
+plot(x,y,type="line", ylim = c(0.0,0.8))
 
 ## e) We want to have a vertical line to represent the mean of our distribution.
 ##    'abline()' can do this for us. Look up help for abline(). 
 ##    Use abline() to create the vertical line. Specify the median of x using
 ##    the argument 'v'.
 ##    In order to get a dashed line, set the argument 'lty' to 2.
-
+?abline
+abline(v = mean(x), lty=2)
 ## f) Take a look at the beaver1 dataset. (You can see it by typing "beaver1".) 
 ##    Then select only the temperature part and store it in a variable "b1temp".
-
+beaver1
+b1temp <- beaver1$temp
 ## g) Calculate the mean and standard deviation of this dataset and plot a normal
 ##    distribution with these parameters.
 
