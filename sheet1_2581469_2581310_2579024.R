@@ -92,7 +92,7 @@ dutchSpeakersDistMeta %>%
 dutchSpeakersDistMeta %>% 
   group_by(Sex) %>%
   summarise(StandardDev = sd(AgeYear, na.rm = TRUE))
-#The two groups seem to have almost the same mean and standard deviation, suggesting that they do not differ
+#The two groups seem to have almost the same means and standard deviations, suggesting that they do not differ
 #much in age.
 
 ## h) What do the whiskers of a boxplot mean?
@@ -215,7 +215,7 @@ plot(b1temp,y)
 ##    these temperatures (or more extreme ones) respectively come 
 ##    from the normal distribution from g)?
 #Is the question asking, what's the probability that a randomly sampled temperature be between 36.91 and 38.13?
-#P(36.91 <= X <= 38.13 : X ~ N(b1temp_mean, b1temp_std))
+#i.e. what's P(36.91 <= X <= 38.13 : X ~ N(b1temp_mean, b1temp_std))?
 upperbound = pnorm(38.13, b1temp_mean, b1temp_std) #P(X <= 38.13; i.e. integral of PDF from x=0 -> x=38.13)
 lowerbound = 1 - pnorm(36.91, b1temp_mean, b1temp_std) # 1 - P(X < 36.13); 1 - integral of PDF from x=0 -> x=36.91
 upperbound - lowerbound #probabily that a randomly sampled temperature will be between [36.91, 38.13]
