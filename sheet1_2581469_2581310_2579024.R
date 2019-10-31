@@ -118,7 +118,8 @@ dutchSpeakersDistMeta %>%
 ## b) In the next questions (c-e), you will create a dataframe of this data, 
 ##    which will also include participant IDs.
 ##    Why is a dataframe better suited to store this data than a matrix?
-
+# In a dataframe the row names have to be unique. This is what we want for the IDs.
+# Furthermore, dataframes allow columns to be of different types.
 
 ## c) First create a vector with participant IDs. Your vector should be named 
 ##    'pps', and your participants should be labeled from 1 to 25
@@ -128,32 +129,40 @@ pps <- c(1:25)
 obs <- c(18, 15, 22, 19, 18, 17, 18, 20, 17, 12, 16, 16, 17, 21, 25, 18, 20, 21, 20, 20, 15, 18, 17, 19, 20)
 
 ## e) Create a dataframe for this data. Assign this to 'stories'. 
-stories <- data.frame
+stories <- data.frame(obs, row.names = pps)
 
 ## f) Take a look at the summary of your dataframe, and at the classes of your 
 ##    columns. What class is the variable 'pps'?
-
+class(pps)
+# pps is of class "integer".
 
 ## g) Change the class of 'pps' to factor. Why is factor a better class for this
 ##    variable?
-
+pps <- factor(pps)
+# The IDs should be categorial (e.g. we don't want do calculate a mean). By 
+# changing the class to factor this requirement is fulfilled.
 
 ## h) Plot a histogram (using hist()) for these data. Set the number of breaks 
 ##    to 8.
-
-
+hist(stories$obs, breaks = 8)
 
 ## i) Create a kernel density plot using density().
-
+d <- density(stories$obs)
+plot(d)
 
 ## j) What is the difference between a histogram and a kernel density plot?
+# The kernel density plot doesn't show the abso frequencies in the data set
+# as does the histogram (which additionally splits the set into more or less
+# arbitrary subsets). Instead, it shows how dense the data points are around
+# a given value.
 
 ## This is a difficult one, remember you just need to provide a serious attempt at solving each 
 ## exercise in order to pass. 
 ## k) Overlay the histogram with the kernel density plot 
 ##    (hint: the area under the curve should be equal for overlaying the graphs 
 ##    correctly.)
-
+hist(stories$obs, breaks = 8, prob = TRUE)
+lines(d)
 
 
 ###############
@@ -189,16 +198,19 @@ plot(x,y,type="line", ylim = c(0.0,0.8))
 ##    In order to get a dashed line, set the argument 'lty' to 2.
 ?abline
 abline(v = mean(x), lty=2)
+
 ## f) Take a look at the beaver1 dataset. (You can see it by typing "beaver1".) 
 ##    Then select only the temperature part and store it in a variable "b1temp".
 beaver1
 b1temp <- beaver1$temp
+
 ## g) Calculate the mean and standard deviation of this dataset and plot a normal
 ##    distribution with these parameters.
 b1temp_mean = mean(b1temp)
 b1temp_std = sd(b1temp)
 y = dnorm(b1temp, mean = b1temp_mean, sd = b1temp_std)
 plot(b1temp,y)
+
 ## h) We observe two temparatures (36.91 and 38.13). What's the likelihood that
 ##    these temperatures (or more extreme ones) respectively come 
 ##    from the normal distribution from g)?
@@ -207,6 +219,7 @@ plot(b1temp,y)
 upperbound = pnorm(38.13, b1temp_mean, b1temp_std) #P(X <= 38.13; i.e. integral of PDF from x=0 -> x=38.13)
 lowerbound = 1 - pnorm(36.91, b1temp_mean, b1temp_std) # 1 - P(X < 36.13); 1 - integral of PDF from x=0 -> x=36.91
 upperbound - lowerbound #probabily that a randomly sampled temperature will be between [36.91, 38.13]
+
 ## i) Use the random sampling function in R to generate 20 random samples from
 ##    the normal distribution from g), and draw a histogram based on this sample.
 ##    Repeat 5 times. What do you observe?
