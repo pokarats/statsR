@@ -111,7 +111,9 @@ dutchSpeakersDistMeta %>%
 
 ## a) What measurement scale is this data? Is it discrete or continuous? Explain
 ##    in one sentence why? (remember, comment out written answers)
-
+# The data's measurement scale is discrete because 'and then' cannot be used 
+# 14.5 times. It is an interval scale because the data can be ordered
+# and the steps between 15 and 16 and 16 and 17 are equidistant.
 
 ## b) In the next questions (c-e), you will create a dataframe of this data, 
 ##    which will also include participant IDs.
@@ -120,13 +122,13 @@ dutchSpeakersDistMeta %>%
 
 ## c) First create a vector with participant IDs. Your vector should be named 
 ##    'pps', and your participants should be labeled from 1 to 25
-
+pps <- c(1:25)
 
 ## d) Next, create a vector containing all the observations. Name this vector 'obs'.
-
+obs <- c(18, 15, 22, 19, 18, 17, 18, 20, 17, 12, 16, 16, 17, 21, 25, 18, 20, 21, 20, 20, 15, 18, 17, 19, 20)
 
 ## e) Create a dataframe for this data. Assign this to 'stories'. 
-
+stories <- data.frame
 
 ## f) Take a look at the summary of your dataframe, and at the classes of your 
 ##    columns. What class is the variable 'pps'?
