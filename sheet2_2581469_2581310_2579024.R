@@ -16,31 +16,39 @@
 
 
 # 2. Read in the data into a variable called "dat".
-
+dat <- read.csv(file="digsym.csv", header=TRUE, sep=",")
 
 # 3. Load the libraries languageR, stringr, dplyr and tidyr.
-
+library(languageR)
+library(stringr)
+library(dplyr)
+library(tidyr)
 
 # 4. How many rows, how many columns does that data have?
-
+str(dat)
+#Observations: 3,700
+#Variables: 11
+# in 3700 rows and 11 columns
 
 # 5. Take a look at the structure of the data frame using "glimpse".
-
+glimpse(dat)
 
 # 6. View the first 20 rows, view the last 20 rows.
-
+head(dat, 20)
+tail(dat, 20)
 
 # 7. Is there any missing data in any of the columns?
-
+#many missing values. e.g. rows 1-10, the values for StimulsDS1.CRESP and StimulusDS1.RESP are missing,
+#the StimulDS1.RT also have NA values.
 
 # 8. Get rid of the row number column.
-
+dat <- select(dat, -c('X'))
 
 # 9. Put the Sub_Age column second.
-
-
+dat <- dat[c(1, 11, 2:10)]
+head(dat)
 # 10. Replace the values of the "ExperimentName" column with something shorter, more legible.
-
+dat$ExperimentName <- "DSK"
 
 # 11. Keep only experimental trials (encoded as "Trial:2" in List), get rid of practice trials 
 # (encoded as "Trial:1"). When you do this, assign the subset of the data to a variable "data2", 
