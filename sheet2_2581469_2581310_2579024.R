@@ -91,15 +91,17 @@ sum(is.na(dat))
 dat$accuracy <- ifelse(dat$StimulDS1.RESP == dat$StimulDS1.CRESP, 1, 0)
 
 # 20. How many wrong answers do we have in total?
-
+wansw <- nrow(dat) - sum(dat$accuracy)
+wansw
+# 185 answers are wrong.
 
 # 21. What's the percentage of wrong responses?
-
-
+wansw/nrow(dat)
+# About 5.5 percent of the responses are wrong.
 
 # 22. Create a subset "correctResponses" that only contains those data points where subjects 
 # responded correctly. 
-
+correctResponses <- filter(dat, accuracy == "1")
 
 
 # 23. Create a boxplot of StimulDS1.RT - any outliers?
