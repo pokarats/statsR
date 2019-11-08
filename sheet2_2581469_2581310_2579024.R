@@ -45,7 +45,7 @@ tail(dat, 20)
 dat <- select(dat, -c('X'))
 
 # 9. Put the Sub_Age column second.
-dat <- dat[c(1, 11, 2:10)]
+dat <- dat[c(1, 10, 2:9)]
 head(dat)
 # 10. Replace the values of the "ExperimentName" column with something shorter, more legible.
 dat$ExperimentName <- "DSK"
@@ -53,37 +53,42 @@ dat$ExperimentName <- "DSK"
 # 11. Keep only experimental trials (encoded as "Trial:2" in List), get rid of practice trials 
 # (encoded as "Trial:1"). When you do this, assign the subset of the data to a variable "data2", 
 # then assign data2 to dat and finally remove data2.
-
+data2 <- filter(dat, List == "Trial:2")
+dat <- data2
+remove(data2)
 
 # 12. Separate Sub_Age column to two columns, "Subject" and "Age", using the function "separate".
-
+data2 <- separate(dat, Sub_Age, c("Subject", "Age"), sep = " _ ")
+dat <- data2
+remove(data2)
 
 # 13. Make subject a factor.
-
+dat$Subject <- factor(dat$Subject)
 
 # 14. Extract experimental condition ("right" vs. "wrong") from the "File" column:
 # i.e. we want to get rid of digit underscore before and the digit after the "right" and "wrong".
-
-
+dat$File <- str_replace(dat$File, "[:digit:]_right[:digit:]?", "right")
+dat$File <- str_replace(dat$File, "[:digit:]_wrong[:digit:]?", "wrong")
 
 # 15. Using str_pad to make values in the File column 8 chars long, by putting 0 at the end  (i.e., 
 # same number of characters, such that "1_right" should be replaced by "1_right0" etc).
-
+dat$File <- str_pad(dat$File, 8, "right", "0")
 
 # 16. Remove the column "List".
-
+dat <- subset(dat, select = -List)
 
 # 17. Change the data type of "Age" to integer.
-
+dat$Age <- as.integer(dat$Age)
 
 # 18. Missing values, outliers:
 # Do we have any NAs in the data, and if so, how many and where are they?
-
+sum(is.na(dat))
+# There are no NAs.
 
 # 19. Create an "accuracy" column using ifelse-statement.
 # If actual response (StimulDS1.RESP) is the same as the correct response (StimulDS1.CRESP), put 
 # in value 1, otherwise put 0.
-
+dat$accuracy <- ifelse(dat$StimulDS1.RESP == dat$StimulDS1.CRESP, 1, 0)
 
 # 20. How many wrong answers do we have in total?
 
