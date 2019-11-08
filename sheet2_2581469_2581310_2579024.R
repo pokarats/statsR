@@ -105,20 +105,26 @@ correctResponses <- filter(dat, accuracy == "1")
 
 
 # 23. Create a boxplot of StimulDS1.RT - any outliers?
-
+boxplot(correctResponses$StimulDS1.RT)
+#Yes, there are at least a dozen outliers
 
 # 24. Create a histogram of StimulDS1.RT with bins set to 50.
-
+hist(correctResponses$StimulDS1.RT, bins=50)
 
 # 25. Describe the two plots - any tails? any suspiciously large values?
-
+#In the boxplot a tail can be clearly observed that extends from around 2000 to 4000. Some individual outliers can also be observed after this reaching
+#all the way to 13-14000
+#There is one suspiciosly large value at around 13-14000
 
 # 26. View summary of correct_RT.
-
+summary(correctResponses)
 
 # 27. There is a single very far outlier. Remove it and save the result in a new dataframe named 
 # "cleaned".
-
+ind <- which(correctResponses$StimulDS1.RT==13852)
+correctResponses$StimulDS1.RT[ind] <- NA
+cleaned <- correctResponses
+summary(cleaned)
 
 ## EXTRA Exercises:
 ##You can stop here for your submission of this week's assignment,
