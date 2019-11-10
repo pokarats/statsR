@@ -109,7 +109,8 @@ boxplot(correctResponses$StimulDS1.RT)
 #Yes, there are at least a dozen outliers
 
 # 24. Create a histogram of StimulDS1.RT with bins set to 50.
-hist(correctResponses$StimulDS1.RT, bins=50)
+#the l = can be explicitly computed as: 
+hist(correctResponses$StimulDS1.RT, breaks = 50)
 
 # 25. Describe the two plots - any tails? any suspiciously large values?
 #In the boxplot a tail can be clearly observed that extends from around 2000 to 4000. Some individual outliers can also be observed after this reaching
@@ -136,17 +137,29 @@ summary(cleaned)
 # Values should not differ more than 2.5 standard deviations from the grand mean of this variable.
 # This condition should be applied in a new variable called "correct_RT_2.5sd", which prints NA 
 # if an RT value is below/above the cutoff. 
-
+StimulDS1RTMean <- mean(correctResponses$StimulDS1.RT, na.rm = TRUE)
+StimulDS1RTSD <- sd(correctResponses$StimulDS1.RT, na.rm = TRUE)
+indOutlierH <- which(correctResponses$StimulDS1.RT > ((2.5 * StimulDS1RTSD) + StimulDS1RTMean))
+indOutlierL <- which(correctResponses$StimulDS1.RT < (StimulDS1RTMean - (2.5 * StimulDS1RTMean)))
+correctResponses$correct_RT_2.5sd <- correctResponses$StimulDS1.RT
+correctResponses$correct_RT_2.5sd[indOutlierH] <- NA
+correctResponses$correct_RT_2.5sd[indOutlierL] <- NA
+cleaned2 <- correctResponses
 
 # 29. Take a look at the outlier observations.
 # Any subjects who performed especially poorly?
+sum(is.na(correctResponses$correct_RT_2.5sd))
+#this includes all outliers
 
+length(indOutlierL)
+#this gives 0, so nobody performed especially poorly
 
 # 30. How many RT outliers are there in total?
-
+#79 outliers
 
 # 31. Plot a histogram and boxplot of the correct_RT_2.5sd column again - nice and clean eh?
-
+boxplot(correctResponses$correct_RT_2.5sd)
+hist(correctResponses$correct_RT_2.5sd)
 
 # 32. Next, we'd like to take a look at the average accuracy per subject.
 # Using the "cast" function from the library "reshape", create a new data.frame which shows the 
