@@ -15,8 +15,8 @@
 
 
 ## Please write below your (and all of your teammates') name, matriculation number. 
-## Name:
-## Matriculation number:
+## Name: Noon Pokaratsiri Goldstein, Pauline Sander, Axel Allen
+## Matriculation number: 2581469, 2581310, 2579024
 
 ## Change the name of the file by adding your matriculation numbers
 ## (exercise0N_firstID_secondID_thirdID.R)
@@ -30,8 +30,9 @@
 
 ## a) Load the package languageR. We're going to work with the dataset 'dative'. 
 ## Look at the help and summary for this dataset.
-
-
+library(languageR)
+help(dative)
+summary(dative)
 ## The term dative alternation is used to refer to the alternation between 
 ## a prepositional indirect-object construction
 ## (The girl gave milk (NP) to the cat (PP)) and a double-object construction 
@@ -40,11 +41,14 @@
 
 ## b) Create a contingency table of 'LenghtOfTheme' using table(). 
 ##    What does this table show you?
-
+table(dative$LengthOfTheme)
+# This table shows how many themes of a certain length can be found in the corpus.
 
 ## c) Look at the distribution of 'LenghtOfTheme' by plotting a histogram and a boxplot. 
 ##    Do there appear to be outliers? Is the data skewed?
-
+hist(dative$LengthOfTheme)
+boxplot(dative$LengthOfTheme)
+# There are some outliers in the data... TODO
 
 ## d) Now we're going to derive sampling distributions of means for different 
 ##    sample sizes. 
@@ -145,12 +149,14 @@
 # this course.
 
 ## a) First install and load the ggplot2 package. Look at the help for ggplot.
-
+install.packages("ggplot2")
+library(ggplot2)
 
 ## b) We're going to be plotting data from the dataframe 'ratings' 
 ##    (included in languageR). 
 ##    Look at the description of the dataset and the summary.
-
+help(ratings)
+summary(ratings)
 
 ## For each word, we have three ratings (averaged over subjects), one for the 
 ## weight of the word's referent, one for its size, and one for the words' 
