@@ -48,47 +48,64 @@ table(dative$LengthOfTheme)
 ##    Do there appear to be outliers? Is the data skewed?
 hist(dative$LengthOfTheme)
 boxplot(dative$LengthOfTheme)
-# There are some outliers in the data... TODO
+# There are many outliers in the data as there are multiple data points outside(above) the whisker
+# in the boxplot.
+# From the histogram plot, the data is also skewed to the right (tail is on the right side). 
 
 ## d) Now we're going to derive sampling distributions of means for different 
 ##    sample sizes. 
 ##    What's the difference between a distribution and a sampling distribution?
-
+# Distribution in general describes the frequency of each possible outcome occurence in a number of trials.
+# A sampling distribution is a probability distribution obtained obtained from sampling (randomly) drawn from
+# a specific population.
 
 ## e) We are going to need a random sample of the variable 'LengthOfTime'. 
 ##    First create a random sample of 5 numbers using sample(). 
 ##    Assign the outcome to 'randomsampleoflengths'
-
+# There's no variable called 'LengthOfTime'; will assume that you meant 'LengthOfTheme' as that's in the data set
+randomsampleoflengths <- sample(dative$LengthOfTheme, 5)
 
 ## f) Do this again, but assign the outcome to 'randomsampleoflengths2'. 
-
+randomsampleoflengths2 <- sample(dative$LengthOfTheme, 5)
 
 ## g) Now calculate the mean of both vectors, and combine these means 
 ##    into another vector called 'means5'.
-
+means5 <- c(mean(randomsampleoflengths), mean(randomsampleoflengths2))
 
 ## h) In order to draw a distribution of such a sample, we want means of 
 ##    1000 samples. However, we don't want to repeat question e and f 
 ##    1000 times. We can do this in an easier way: 
 ##    by using a for-loop. See dataCamp or the course books for 
 ##    how to write loops in R.
-
+means5 <- mean(sample(dative$LengthOfTheme, 5))
+for (i in 1:999){
+  means5 <- append(means5, mean(sample(dative$LengthOfTheme, 5)))
+}
 
 ## i) Repeat the for-loop in question h, but use a sample size of 50. 
 ##    Assign this to 'means50' instead of 'means5'.
-
+means50 <- mean(sample(dative$LengthOfTheme, 50))
+for (i in 1:999){
+  means50 <- append(means50, mean(sample(dative$LengthOfTheme, 50)))
+}
 
 ## j) Explain in your own words what 'means5' and 'means50' now contain. 
 ##    How do they differ?
-
+# In means5, for each iteration of the 1000 samplings, the mean is calculated from the 5 randomly sampled numbers.
+# In means50, for each iteration of the 1000 samplings, the mean is calculated from 50 sampled numbers instead.
 
 ## k) Look at the histograms for means5 and means50. Set the number of breaks to 15.
 ##    Does means5 have a positive or negative skew?
-
+hist(means5, breaks = 15)
+hist(means50, breaks = 15)
+# means5 have a positive skew (i.e. right skewed)
 
 ## l) What causes this skew? In other words, why does means5 have bigger 
 ##    maximum numbers than means50?
-
+# As sampling size increases, the sample distribution tends towards the normal distribution according to the central
+# limiti theorem. Thus, the more extreme values (min or max) fall within a certain distance from the normal 
+# distribution mean. When sample size is smaller (e.g. 5), the distribution doesn't follow the normal distribution
+# and so the extreme values can be much higher than if the sample were to follow normal distribution.
 
 ###############
 ### Exercise 2: Confidence interval
@@ -184,6 +201,11 @@ frequency <- c(mean(subset(ratings, Class == "animal")$Frequency), mean(subset(r
 length <- c(mean(subset(ratings, Class == "animal")$Length), mean(subset(ratings, Class == "plant")$Length))
 ratings.2 <- data.frame(condition, frequency, length)
 ratings.2
+ggplot(ratings.2, aes(x = length, fill = condition)) + 
+  geom_histogram(aes(y = ..density..), show.legend = FALSE)
+
+ggplot(ratings.2, aes(x = length, fill = condition)) + 
+  geom_bar(aes(y = (..count..)/sum(..count..)), show.legend = FALSE)
 
 
 ## d) Let's assume that we have additional data on the ratings of words. 
@@ -203,8 +225,18 @@ occurrence <- c("common", "common", "exotic", "exotic")
 ratings.3 <- cbind(ratings.3, occurrence)
 ratings.3
 
+# I'm confused here by the instruction whether or not to produce a line graph or a scattered plot
+# the mapping instruction seems to specify point shapes and size, which would be more compatible with
+# a scattered plot than a line graph. Also, there's only 1 data point per each category so I'm not sure
+# how R can draw a line with just 1 point per class????? 
+ggplot(ratings.3, aes(x = length, y = frequency, shape = occurrence, col = condition, size = frequency)) + 
+  geom_point()
+  
 
 ## e) Based on the graph you produced in question d, 
 ##    what can you conclude about how frequently 
 ##    people talk about plants versus animals, 
 ##    with regards to how common they are?
+# In general, people talk more frequently about animals than they do plants.
+# With respect to animals, people talk more frequently about exotic animals than they do common ones.
+# On the other hand, people talke more frequently about common plants than they do exotic ones.
