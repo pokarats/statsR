@@ -159,7 +159,9 @@ bargraph.CI(dative$AnimacyOfTheme, dative$LengthOfTheme)
 ##    (this argument takes 'ciMean'). 
 ##    Why does the ci differ in this new plot compared to the previous plot?
 bargraph.CI(dative$AnimacyOfTheme, dative$LengthOfTheme, ci.fun = function(dative) ciMean(dative))
-
+# The first plot (using the default ci.fun) only considered the values from the dative$LengthOfTheme variable.
+# The second plot with the specified ci.fun considered the values from all the numerical variables in the 
+# data set.
 
 ###############
 ### Exercise 3: Plotting graphs using ggplot.
