@@ -56,7 +56,7 @@ boxplot(dative$LengthOfTheme)
 ##    sample sizes. 
 ##    What's the difference between a distribution and a sampling distribution?
 # Distribution in general describes the frequency of each possible outcome occurence in a number of trials.
-# A sampling distribution is a probability distribution obtained obtained from sampling (randomly) drawn from
+# A sampling distribution is a probability distribution obtained from sampling (randomly) drawn from
 # a specific population.
 
 ## e) We are going to need a random sample of the variable 'LengthOfTime'. 
@@ -117,24 +117,32 @@ hist(means50, breaks = 15)
 ## Navarro discusses this in more depth in chapter 10.
 
 ## a) What does a confidence interval mean from the perspective of experiment replication?
-
+# CI means the likelihood another experiment replication is able to reproduce similar results. So, the higher CI 
+# means that it's more likely that the experiment can be replicated with similar results.
 
 ## b) Let's calculate the confidence interval for our means from the previous 
 ##    exercise.
 ##    First, install and load the packages 'lsr' and 'sciplot'
-
-
+install.packages('lsr')
+install.packages('sciplot')
+library(lsr)
+library(sciplot)
 ## c) Look at the description of the function ciMean to see which arguments it takes.
-
+?ciMean
 
 ## d) Use ciMean to calculate the confidence interval of the dataset dative from
 ##    the previous exercise.
 ##    Also calculate the mean for the variable LengthOfTheme.
-
+# I think you meant to do ciMean on dative and ciMean of dative$LengthOfTheme and not just the 
+# mean(dative$LengthOfTheme)
+ciMean(dative)
+ciMean(dative$LengthOfTheme)
+mean(dative$LengthOfTheme)
 
 ## e) Does the mean of the sample fall within the obtained interval? 
 ##    What does this mean?
-
+# Yes the mean(4.271529) falls with in the CI.
+# It means that mean is likely to be from a similar distribution.
 
 ## f) As the description of dative mentions, the dataset describes the 
 ##    realization of the dative as NP or PP in two corpora.
@@ -144,12 +152,13 @@ hist(means50, breaks = 15)
 ##    animate (AnimacyOfTheme) and how long the theme is (LengthOfTheme).
 ##    Plot this using the function bargraph.CI(). Look at the help for this function. 
 ##    Use the arguments 'x.factor' and 'response'.
-
+?bargraph.CI
+bargraph.CI(dative$AnimacyOfTheme, dative$LengthOfTheme)
 
 ## g) Expand the plot from question f with the ci.fun argument 
 ##    (this argument takes 'ciMean'). 
 ##    Why does the ci differ in this new plot compared to the previous plot?
-
+bargraph.CI(dative$AnimacyOfTheme, dative$LengthOfTheme, ci.fun = function(dative) ciMean(dative))
 
 
 ###############
