@@ -44,26 +44,38 @@ sum(dbinom(0:4,12,0.2))
 ## a) Consider the dataset dutchSpeakersDistMeta from our first tutorial again. 
 ##    Load the package (languageR) and look at the summary of the variables, 
 ##    as well as their classes. Which variables are factors?
+library(languageR)
+summary(dutchSpeakersDistMeta)
+str(dutchSpeakersDistMeta)
+# Speaker, Sex, AgeGroup, ConversationType, EduLevel are factors.
 
 ## b) We want to find out whether there is a difference between males and females 
 ##    with respect to the age groups they are in.
 ##	  First use the function 'table()' to get the counts and create 
 ##    a contingency table of AgeGroup by Sex.
+table(dutchSpeakersDistMeta$AgeGroup, dutchSpeakersDistMeta$Sex)
 
 ##    Visualize your data with a single bar plot (use ggplot) that represents the counts with 
 ##    respect to each age group and each sex.
+library(ggplot2)
+ggplot(dutchSpeakersDistMeta, aes(x=AgeGroup, fill=Sex))+
+  geom_bar()
 
 ## c) Inspect the table you created in b). Does it look like there could be a significant 
 ##    difference between the sexes?
+# For both sexes, there are more speakers in the younger age groups. However, there are more female
+# speakers than male speakers in all age groups exept one.
 
 ## d) We are going to calculate whether there's a difference between males and females 
 ##    regarding their age group using the function chisq.test. 
 ##    Look at the help of this function. 
 ##    Then use the  function to calculate whether there's a difference in our table from b). 
 ##    Is there a significant difference in age group?
+?chisq.test
+chisq.test(dutchSpeakersDistMeta$Sex, dutchSpeakersDistMeta$AgeGroup)
 
 ## e) What are the degrees of freedom for our data? How are they derived?
-
+# (C-1)(R-1) = (5-1)(2-1) = 4
 
 ##########
 ##Exercise 3. Binomial versus chi-square
