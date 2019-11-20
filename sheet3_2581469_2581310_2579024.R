@@ -240,9 +240,10 @@ ratings.3
 # the mapping instruction seems to specify point shapes and size, which would be more compatible with
 # a scattered plot than a line graph. Also, there's only 1 data point per each category so I'm not sure
 # how R can draw a line with just 1 point per class????? 
-ggplot(ratings.3, aes(x = length, y = frequency, shape = occurrence, col = condition, size = frequency)) + 
-  geom_point()
-  
+ggplot(ratings.3, aes(x = length, y = frequency, shape = occurrence, group = condition)) + 
+  geom_point(size = 3) +
+  geom_line()
+
 
 ## e) Based on the graph you produced in question d, 
 ##    what can you conclude about how frequently 
