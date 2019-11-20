@@ -30,11 +30,13 @@
 
 ## a) Please calculate the probability of getting exactly 4 answers right 
 ##    if you answer by chance. Calculate this using the dbinom() function.
-
+dbinom(4,12,0.2)
 
 ## b) Next please calculate the probability of answering 4 or less questions 
 ##    correctly by chance. 
-
+pbinom(4,12,0.2)
+# or
+sum(dbinom(0:4,12,0.2))
 
 ##########
 ##Exercise 2. Chi-square test
