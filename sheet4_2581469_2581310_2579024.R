@@ -53,18 +53,19 @@ str(dutchSpeakersDistMeta)
 ##    with respect to the age groups they are in.
 ##	  First use the function 'table()' to get the counts and create 
 ##    a contingency table of AgeGroup by Sex.
-table(dutchSpeakersDistMeta$AgeGroup, dutchSpeakersDistMeta$Sex)
+(dutchtable <- table(dutchSpeakersDistMeta$AgeGroup, dutchSpeakersDistMeta$Sex))
 
 ##    Visualize your data with a single bar plot (use ggplot) that represents the counts with 
 ##    respect to each age group and each sex.
 library(ggplot2)
 ggplot(dutchSpeakersDistMeta, aes(x=AgeGroup, fill=Sex))+
-  geom_bar()
+  geom_bar(position = "dodge")
 
 ## c) Inspect the table you created in b). Does it look like there could be a significant 
 ##    difference between the sexes?
 # For both sexes, there are more speakers in the younger age groups. However, there are more female
-# speakers than male speakers in all age groups exept one.
+# speakers than male speakers in all age groups exept one. Except for this one group,
+# the speakers of both sexes should be distributed more or less equally.
 
 ## d) We are going to calculate whether there's a difference between males and females 
 ##    regarding their age group using the function chisq.test. 
@@ -72,7 +73,8 @@ ggplot(dutchSpeakersDistMeta, aes(x=AgeGroup, fill=Sex))+
 ##    Then use the  function to calculate whether there's a difference in our table from b). 
 ##    Is there a significant difference in age group?
 ?chisq.test
-chisq.test(dutchSpeakersDistMeta$Sex, dutchSpeakersDistMeta$AgeGroup)
+chisq.test(dutchtable)
+# The p value  (0.51) doesn't suggest a significant difference.
 
 ## e) What are the degrees of freedom for our data? How are they derived?
 # (C-1)(R-1) = (5-1)(2-1) = 4
@@ -94,11 +96,17 @@ chisq.test(dutchSpeakersDistMeta$Sex, dutchSpeakersDistMeta$AgeGroup)
 
 ## a) What is the null hypothesis, i.e. how often would we expect the participants to 
 ##    be correct by chance (in raw number and in percentage)?
+# Null hypothesis: There is no such thing as therapeutic touch. If the participants
+# guessed right, this happened by pure chance.
+# In this case they should be right about 50% of the time (140 out of 280).
 
 ## b) Using a chisquare test, what do you conclude about whether therapeutic touch 
 ##    works? 
+# (123-140)^2/140 = -17^2/140 = 289/240 = 2.06
+
 
 ## c) Now calculate significance using the binomial test as we used it in exercise 1.
+
 
 ## d) The results from these two tests are slightly different. Which test do you think 
 ##    is better for our data, and why?
@@ -111,3 +119,7 @@ chisq.test(dutchSpeakersDistMeta$Sex, dutchSpeakersDistMeta$AgeGroup)
 ## What would be the problem of using the normal ChiSquare test in a case where 
 ## McNemar's test would be more appropriate?
 
+# A McNemars test should be used if there are dependencies between the
+# observations. This can be the case, if two measurements have been taken for 
+# each individuum, one before and one after a treatment. Then, the measurements
+# should be put together in pairs and counted as those.
