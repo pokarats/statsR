@@ -30,13 +30,20 @@
 
 ## a) Please calculate the probability of getting exactly 4 answers right 
 ##    if you answer by chance. Calculate this using the dbinom() function.
-dbinom(4,12,0.2)
+#P(success for each question) = 1/5, P(failure for each question) = 4/5
+p = 1/5
+q = 4/5
+num_trials = 12
+dbinom(4,num_trials,p)
 
 ## b) Next please calculate the probability of answering 4 or less questions 
 ##    correctly by chance. 
-pbinom(4,12,0.2)
+# (P(X <= 4))
+#sum(dbinom for x = 0 to 4) or use pbinom for cumulative probability
+#take the lower tail so leave the default
+pbinom(4,num_trials,p)
 # or
-sum(dbinom(0:4,12,0.2))
+sum(dbinom(0:4,num_trials,p))
 
 ##########
 ##Exercise 2. Chi-square test
@@ -64,8 +71,9 @@ ggplot(dutchSpeakersDistMeta, aes(x=AgeGroup, fill=Sex))+
 ## c) Inspect the table you created in b). Does it look like there could be a significant 
 ##    difference between the sexes?
 # For both sexes, there are more speakers in the younger age groups. However, there are more female
-# speakers than male speakers in all age groups exept one. Except for this one group,
-# the speakers of both sexes should be distributed more or less equally.
+# speakers than male speakers in all age groups exept one. 
+# Whether that difference is significant, it is difficult to say with any degrees of certainty
+# without any calculations.
 
 ## d) We are going to calculate whether there's a difference between males and females 
 ##    regarding their age group using the function chisq.test. 
@@ -123,3 +131,4 @@ chisq.test(dutchtable)
 # observations. This can be the case, if two measurements have been taken for 
 # each individuum, one before and one after a treatment. Then, the measurements
 # should be put together in pairs and counted as those.
+# 
