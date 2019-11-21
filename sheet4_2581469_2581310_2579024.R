@@ -111,14 +111,22 @@ chisq.test(dutchtable)
 ## b) Using a chisquare test, what do you conclude about whether therapeutic touch 
 ##    works? 
 # (123-140)^2/140 = -17^2/140 = 289/240 = 2.06
-
+pchisq(2.06, 1)
+# = 0.8487898
+# The null-hypothesis should not be rejected.
 
 ## c) Now calculate significance using the binomial test as we used it in exercise 1.
-
+pbinom(123,280,0.5,lower.tail = FALSE)
+# = 0.9757994
+# cf. slide 9-10 lec. 5
+# Need to calculate probability that they manage to get 123 or more trials
+# right by chance.The null-hypothesis should not be rejected.
 
 ## d) The results from these two tests are slightly different. Which test do you think 
 ##    is better for our data, and why?
-
+# In this case, the binomial test should be used, simply because it is possible.
+# ChiSquare is only a proxy for those cases, for which it is not possible to use the
+# binomial test.
 
 ##########
 ##Exercise 4.
@@ -130,5 +138,9 @@ chisq.test(dutchtable)
 # A McNemars test should be used if there are dependencies between the
 # observations. This can be the case, if two measurements have been taken for 
 # each individuum, one before and one after a treatment. Then, the measurements
-# should be put together in pairs and counted as those.
-# 
+# should be put together in pairs and counted as those, using a McNemar's test.
+# Counting the measurements separately and using the normal ChiSquare test would
+# 1) result in a completely different contingency table.
+# 2) not account for the change between two data points.
+# 3) include too many data points.
+# It would thus not give the desired outcome.
