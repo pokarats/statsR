@@ -110,7 +110,7 @@ chisq.test(dutchtable)
 
 ## b) Using a chisquare test, what do you conclude about whether therapeutic touch 
 ##    works? 
-# (123-140)^2/140 = -17^2/140 = 289/240 = 2.06
+# (123-140)^2/140 = -17^2/140 = 289/140 = 2.06
 pchisq(2.06, 1)
 # = 0.8487898
 # The null-hypothesis should not be rejected.
@@ -124,7 +124,7 @@ pbinom(123,280,0.5,lower.tail = FALSE)
 
 ## d) The results from these two tests are slightly different. Which test do you think 
 ##    is better for our data, and why?
-# In this case, the binomial test should be used, simply because it is possible.
+# In this case (when there are only 2 categories), the binomial test should be used, simply because it is possible.
 # ChiSquare is only a proxy for those cases, for which it is not possible to use the
 # binomial test.
 
