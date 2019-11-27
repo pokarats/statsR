@@ -35,6 +35,7 @@ p = 1/5
 q = 4/5
 num_trials = 12
 dbinom(4,num_trials,p)
+# getting exactly a certain number of outcome can only be evaluated on discrete variables
 
 ## b) Next please calculate the probability of answering 4 or less questions 
 ##    correctly by chance. 
@@ -83,9 +84,13 @@ ggplot(dutchSpeakersDistMeta, aes(x=AgeGroup, fill=Sex))+
 ?chisq.test
 chisq.test(dutchtable)
 # The p value  (0.51) doesn't suggest a significant difference.
+# the p value (that corresponds to the chi-square value) tells us the probability of observing our 
+# results or data GIVEN that the NULL hypothesis is true. Hence, you want a smaller P-value so that you
+# can reject the NULL hypothesis and attribute your observed differences to something (NOT by chance.)
 
 ## e) What are the degrees of freedom for our data? How are they derived?
 # (C-1)(R-1) = (5-1)(2-1) = 4
+#  (number of categories i.e. columns - 1)(number of subcategories i.e. rows - 1)
 
 ##########
 ##Exercise 3. Binomial versus chi-square
@@ -110,20 +115,42 @@ chisq.test(dutchtable)
 
 ## b) Using a chisquare test, what do you conclude about whether therapeutic touch 
 ##    works? 
+
+## here are the correctiosn from the tutorial
+type <- c('correct', 'incorrect')
+expected <- c(140, 140)
+observed <- c(123, 157)
+total <- c(280, 280)
+chisq.test(observed)
+# X-squareed = 4.1286, df = 1, p-value = 0.04216
+# so, we can reject the NULL hypothesis
+
+# ignore these below: incorrect answer
 # (123-140)^2/140 = -17^2/140 = 289/140 = 2.06
 pchisq(2.06, 1)
 # = 0.8487898
 # The null-hypothesis should not be rejected.
 
 ## c) Now calculate significance using the binomial test as we used it in exercise 1.
-pbinom(123,280,0.5,lower.tail = FALSE)
-# = 0.9757994
+pbinom(123, size=280, 0.5, lower.tail = T)
+# = 0.02420056
+
+# for 2 tailed test, need to multiple area of the pbinom by 2; remember this distribution is approximated
+# by the normal distribution
+pbinom(123, size=280, 0.5, lower.tail = T) * 2
+# p = 0.04840113, which is comparable to the p-value of 0.04216 from the X-squared distribution; 
+# X-squared distribution only has 1 tail
+
+# --- ignore below: incorrect answers
 # cf. slide 9-10 lec. 5
 # Need to calculate probability that they manage to get 123 or more trials
 # right by chance.The null-hypothesis should not be rejected.
 
 ## d) The results from these two tests are slightly different. Which test do you think 
 ##    is better for our data, and why?
+# the binomial is more representative of the distribution of the sample; so that is more exact and accurate in
+# this case since we're comparing 2 outcomes. The X-squared is an approximation.
+
 # In this case (when there are only 2 categories), the binomial test should be used, simply because it is possible.
 # ChiSquare is only a proxy for those cases, for which it is not possible to use the
 # binomial test.
