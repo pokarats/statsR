@@ -132,10 +132,10 @@ glimpse(data)
 summary(data)
 mdata <- melt(data, id.vars = c("File"),
      measure.vars = c("StimulDS1.RT"))
-cdata <- dcast(mdata, variable ~ File, mean, na.rm = T)
+cdata <- dcast(mdata, File ~ variable, mean, na.rm = T)
 # 8. Create histograms of the accuracy data depending on the right and wrong 
 # condition and display them side by side.
-ggplot(cdata, aes(variable)) + geom_histogram(stat = "count")
+ggplot(cdata, aes(File, StimulDS1.RT)) + geom_col()
 # 9. Display the same data in density plots. 
 
 
