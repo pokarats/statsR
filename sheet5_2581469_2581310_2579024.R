@@ -30,16 +30,18 @@
 library(lsr)
 library(tidyr)
 library(effsize)
+library(tidyverse)
 
 # 1. Download the data file "digsym_clean.csv" from the moodle and save it in your 
 # working directory. 
 
 
 # 2. Read in the data into a variable called "data".
-
-
+data <- read.csv("digsym.csv")
+str(data)
 # 3. Get rid of the column "X"
-
+library(dplyr)
+data <- select(data, -c(X))
 
 # Say you're interested in whether people respond with different accuracy to 
 # right vs. wrong picture-symbol combinations.
@@ -91,12 +93,21 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 # 4. Apply the function summarySE on the accuracy data grouping by right/wrong condition
 # (use the provided documentation inside the function above for the arguments description).
 
+# cleaning the right/wrong column
+data$File <- str_replace_all(data$File, "[:digit:]+\\_|[:digit:]$", "")
+glimpse(data)
+data$File <- as.factor(data$File)
+accuracy_by_right_wrong <- summarySE(data = data, "StimulDS1.RT", "File", na.rm = T)
 
 # 5. Create the barplot (use ggplot2 for this and all tasks below) with error bars 
 # (which the function summarySE readily provided).
 # Gauging from the plot, does it look like there's a huge difference in accuracy 
 # for responses to the right and wrong condition?
-
+library(ggplot2)
+ggplot(accuracy_by_right_wrong, aes(File, StimulDS1RTMean)) + 
+  geom_col() + 
+  geom_errorbar(aes(ymin = StimulDS1RTMean - StimulDS1RTSD, ymax = StimulDS1RTMean + StimulDS1RTSD), width = 0.2)
+# from the plot, there doesn't seem to be a huge difference in accuracy for responses
 
 # 6. Let's go back to our data frame "data", which is still loaded in your console
 # Now that you've taken a look at the data, you want to get into the stats.
@@ -105,6 +116,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 # Why can't you compute a t-test on the data as they are now? 
 # Hint: Which assumption is violated?
 
+## we don't know if the data follows a normal distribution when plotted.
 
 # 7. We need to reshape the data to only one observation (average accuracy) per subject 
 # and right/wrong condition. Here we will use cast() which we discussed in the tutorial
@@ -114,12 +126,16 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 # Store the result in a new variable called "cdata". 
 ## Check ?cast or https://www.statmethods.net/management/reshape.html for more infos on 
 ## cast(). 
-
-
+library(reshape2)
+?cast
+glimpse(data)
+summary(data)
+mdata <- melt(data, id.vars = c("File"),
+     measure.vars = c("StimulDS1.RT"))
+cdata <- dcast(mdata, variable ~ File, mean, na.rm = T)
 # 8. Create histograms of the accuracy data depending on the right and wrong 
 # condition and display them side by side.
-
-
+ggplot(cdata, aes(variable)) + geom_histogram(stat = "count")
 # 9. Display the same data in density plots. 
 
 
@@ -127,7 +143,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.i
 # distibuted?
 
 
-# 11. Create boxplots of the accuracy data.
+# 11. Create boxplots of the accuracy data.            
 
 
 # 12. Compute the t-test to compare the mean accuracy between wrong and right picture
