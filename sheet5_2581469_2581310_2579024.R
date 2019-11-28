@@ -142,21 +142,27 @@ ggplot(cdata, aes(accuracy, color = condition)) + geom_density()
 # no
 
 # 11. Create boxplots of the accuracy data.            
-ggplot(cdata, aes(Subject, accuracy, group = condition)) + geom_boxplot()
+ggplot(cdata, aes(Subject, accuracy, group = condition, color = condition)) + geom_boxplot()
 
 # 12. Compute the t-test to compare the mean accuracy between wrong and right picture
 # combinations.
 # Do you need a paired t-test or independent sample t-test? why?
-
+# we need the paired t-test because the 2 groups (right and wrong) are from the same sampling
+t.test(accuracy ~ condition, data = cdata, paired = T)
 
 # 13. What does the output tell you? What conclusions do you draw?
-
+# The p-value of 0.000588 is less than the alpa value of 0.05 so we can reject the null hypothesis
+# and conclude that the difference in the means between the 2 groups is statistically significant
 
 # 14. Compute the effect size using CohensD.
-
+library(effsize)
+?cohensD
+cohensD(accuracy ~ condition, data = cdata)
 
 # 15. Which effect size do we get? How do you interpret this result?
-
+# The effect size from the Cohen's d calculation is 0.77657 (medium)
+# Depending on the application of the study and other studies out there,
+# this may mean an important difference between the two group averages or a trivial one
 
 # 16. In addition to the long-format data we've just been working on, you may also 
 # encounter data sets in a wide format (this is the format we have been using in 
@@ -164,19 +170,21 @@ ggplot(cdata, aes(Subject, accuracy, group = condition)) + geom_boxplot()
 # Let's do a transformation of our data set (cdata) to see what it would look like in a wide 
 # format.
 # Use spread() from the tidyr package.
-
-
+?spread
+cdata_wide <- cdata %>% spread(condition, accuracy)
 # 17. Compute the t-test again on the wide format data - note that for wide-format 
 # data you need to use a different annotation for the t-test.
-
+?t.test()
+t.test(cdata_wide$right, cdata_wide$wrong, paired = T)
 
 # 18. Compare the t-test results from the wide-format and the long-format data. 
 # What do you notice?
-
+# The t-test results from both format data are the same. The difference was how to code the arguments of the 
+# function
 
 # 19. Compute CohensD on the wide format data. What do you notice?
-
-
+cohensD(cdata_wide$right, cdata_wide$wrong)
+# the cohensD on the wide format data is also the same.
 
 # 20. Let's try the t-test again, but for a different question:
 # Suppose you are interested in whether reaction times in the digit symbol 
@@ -186,11 +194,18 @@ ggplot(cdata, aes(Subject, accuracy, group = condition)) + geom_boxplot()
 # Collapse the original data, using 
 # cast(data, var1 + var2 + var3 ... ~ ., function, value = var4, na.rm = T).
 # Store the result in a new variable called "cdat"
-
-
+glimpse(data)
+mdat <- melt(data, id.vars = c("Subject", "Gender"),
+              measure.vars = c("accuracy"))
+cdat <- dcast(mdat, Gender + Subject ~ variable, mean, na.rm = T)
 # 21. Take a look at cdat using head().
-
+head(cdat)
 
 # 22. Compute the t-test to compare the accuracy means of female and male 
 # participants.
 # Which t-test do you need and why? How do you interpret the result?
+# need the independent t-test because the groups are different 2 different samples from the population
+t.test(accuracy ~ Gender, data = cdat)
+# from the t-test, the p-value is 0.7319, which suggest that we cannot reject the null hypothesis
+# for alpha = 0.05. The p-value can be interpreted as the probability that the observed difference in means
+# between the 2 groups is due to chance.
