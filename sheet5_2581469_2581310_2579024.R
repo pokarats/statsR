@@ -133,7 +133,8 @@ mdata <- melt(data, id.vars = c("Subject", "condition"),
 cdata <- dcast(mdata, condition + Subject ~ variable, mean, na.rm = T)
 # 8. Create histograms of the accuracy data depending on the right and wrong 
 # condition and display them side by side.
-ggplot(cdata, aes(Subject, accuracy, fill = condition)) + geom_col(position = 'dodge')
+#ggplot(cdata, aes(Subject, accuracy, fill = condition)) + geom_col(position = 'dodge')
+ggplot(cdata, aes(accuracy, fill = condition)) + geom_histogram() + facet_wrap(~condition)
 # 9. Display the same data in density plots. 
 ggplot(cdata, aes(accuracy, color = condition)) + geom_density()
 
@@ -204,7 +205,7 @@ head(cdat)
 # 22. Compute the t-test to compare the accuracy means of female and male 
 # participants.
 # Which t-test do you need and why? How do you interpret the result?
-# need the independent t-test because the groups are different 2 different samples from the population
+# We need the independent t-test because the groups are 2 different samples from the population.
 t.test(accuracy ~ Gender, data = cdat)
 # from the t-test, the p-value is 0.7319, which suggest that we cannot reject the null hypothesis
 # for alpha = 0.05. The p-value can be interpreted as the probability that the observed difference in means
