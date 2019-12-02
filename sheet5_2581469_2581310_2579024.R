@@ -133,7 +133,7 @@ mdata <- melt(data, id.vars = c("Subject", "condition"),
 cdata <- dcast(mdata, condition + Subject ~ variable, mean, na.rm = T)
 # 8. Create histograms of the accuracy data depending on the right and wrong 
 # condition and display them side by side.
-ggplot(cdata, aes(Subject, accuracy, fill = condition)) + geom_col(position = 'dodge')
+ggplot(cdata, aes(accuracy, Subject, fill = condition)) + geom_col(position = 'dodge')
 # 9. Display the same data in density plots. 
 ggplot(cdata, aes(accuracy, color = condition)) + geom_density()
 
@@ -142,7 +142,7 @@ ggplot(cdata, aes(accuracy, color = condition)) + geom_density()
 # no
 
 # 11. Create boxplots of the accuracy data.            
-ggplot(cdata, aes(Subject, accuracy, group = condition, color = condition)) + geom_boxplot()
+ggplot(cdata, aes(condition, accuracy, group = condition)) + geom_boxplot()
 
 # 12. Compute the t-test to compare the mean accuracy between wrong and right picture
 # combinations.
@@ -162,7 +162,7 @@ cohensD(accuracy ~ condition, data = cdata)
 # 15. Which effect size do we get? How do you interpret this result?
 # The effect size from the Cohen's d calculation is 0.77657 (medium)
 # Depending on the application of the study and other studies out there,
-# this may mean an important difference between the two group averages or a trivial one
+# this may mean an important difference between the two group averages or a trivial one.
 
 # 16. In addition to the long-format data we've just been working on, you may also 
 # encounter data sets in a wide format (this is the format we have been using in 
@@ -180,7 +180,7 @@ t.test(cdata_wide$right, cdata_wide$wrong, paired = T)
 # 18. Compare the t-test results from the wide-format and the long-format data. 
 # What do you notice?
 # The t-test results from both format data are the same. The difference was how to code the arguments of the 
-# function
+# function.
 
 # 19. Compute CohensD on the wide format data. What do you notice?
 cohensD(cdata_wide$right, cdata_wide$wrong)
