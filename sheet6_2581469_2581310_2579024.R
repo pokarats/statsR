@@ -14,8 +14,8 @@
 
 
 ## Please write below your (and your teammates') name, matriculation number. 
-## Name:
-## Matriculation number:
+## Name: Noon Pokaratsiri Goldstein, Pauline Sander, Axel Allen
+## Matriculation number: 2581469, 2581310, 2579024
 
 ## Change the name of the file by adding your matriculation numbers
 ## (sheet06_firstID_secondID_thirdID.R)
@@ -34,20 +34,21 @@ library(languageR)
 # a) Get some data - access the ratings data set in languageR and name it "data".
 # The data set contains subjective frequency ratings and their length averaged over 
 # subjects, for 81 concrete English nouns.
-
+data <- ratings
 
 # b) Take a look at the data frame.
-
-
+glimpse(data)
+summary(data)
 # c) Let's say you're interested in whether there is a linear relationship between 
 # the word frequency of the 81 nouns and their length.
 # Take a look at the relationship between the frequency and word length data by 
 # means of a scatterplot (use the ggplot library for this).
-
-
+library(ggplot2)
+ggplot(data, aes(x = Length, y = Frequency)) +
+  geom_point(size = 2, shape = 21)
 # d) Judging from the graphs, do you think that word frequency and word length are 
 # in any way correlated with one another?
-
+# it looks like there may be an inverse relatinoship between the two variables.
 
 # e) Compute the Pearson correlation coefficient for the two variables by means 
 # of cor().
@@ -56,26 +57,35 @@ library(languageR)
 # divided by the product of their respective variance. 
 # It is scaled between 1 (for a perfect positive correlation) to -1 (for a perfect 
 # negative correlation).
-
-
+cor(data$Length, data$Frequency, use = 'pairwise.complete.obs')
+# since we don't have missing values in the data set, not specifying the use = argument also 
+# resulted in the same thing
+cor(data$Length, data$Frequency)
 # f) Does the correlation coefficient suggest a small, medium or large effect?
 # What about the direction of the effect?
-
+# the negative number means a negative correlation
+# based on the scale of -1 to 1, 0.43 would suggest a medium correlational effect
 
 # g) Note that we have a large number of tied ranks in word length data 
 # (since there are multiple words with the length of e.g. 5).
 # Thus, we might draw more accurate conclusions by setting the method to 
 # Kendall's tau instead of the Pearson correlation coefficient (which is the default).
 # How do you interpret the difference between these 2 correlation coefficients?
-
-
+cor(data$Length, data$Frequency, method = 'kendall')
+# Kendall's coefficient doesn't assume normal distribution of your sample
+# it also able to analyze data with tied values i.e. multiple y-values for same x-values.
+# Kendall's coefficient also describes how dependent the two variables are on each other
 # h) What about significance? Use the more user-friendly cor.test()!
 # Take a look at the output and describe what's in there.
 # What do you conclude?
-
+cor.test(data$Length, data$Frequency, method = 'kendall')
+?cor.test
+#cor.test also includes z score and p-value in addition to the rank correlation coefficient
+# the p-value of 8.907*10^-5 suggests that it very unlikely that the null hypothesis is true. So, we can reject
+# the null hypothesis and conclude that the relationship between the 2 variables is significant.
 
 # i) Finally, also calculate Spearman's rank correlation for the same data.
-
+cor.test(data$Length, data$Frequency, method = 'spearman')
 
 #######################
 ### Exercise 2: Regression
