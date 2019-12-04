@@ -105,6 +105,14 @@ library(ggplot2)
 ggplot(accuracy_by_right_wrong, aes(condition, accuracy)) + 
   geom_col() + 
   geom_errorbar(aes(ymin = accuracy - sd, ymax = accuracy + sd), width = 0.2)
+# sd is the measurement of how far your observations are from one another
+# se describes how unsure we are about a parameter(e.g. the mean) i.e. how far your sample mean is likely to be
+# for the true population mean
+# so do we use se or sd for the errorbars? SE
+# so the above should be:
+ggplot(accuracy_by_right_wrong, aes(condition, accuracy)) + 
+  geom_col() + 
+  geom_errorbar(aes(ymin = accuracy - se, ymax = accuracy + se), width = 0.2)
 # from the plot, there doesn't seem to be a huge difference in response accuracy between the 2 condition groups
 
 # 6. Let's go back to our data frame "data", which is still loaded in your console
@@ -125,20 +133,24 @@ ggplot(accuracy_by_right_wrong, aes(condition, accuracy)) +
 ## Check ?cast or https://www.statmethods.net/management/reshape.html for more infos on 
 ## cast(). 
 library(reshape2)
+library(reshape)
+library(tidyr)
 ?cast
 glimpse(data)
 summary(data)
 mdata <- melt(data, id.vars = c("Subject", "condition"),
      measure.vars = c("accuracy"))
 cdata <- dcast(mdata, condition + Subject ~ variable, mean, na.rm = T)
+
 # 8. Create histograms of the accuracy data depending on the right and wrong 
 # condition and display them side by side.
 
 #ggplot(cdata, aes(Subject, accuracy, fill = condition)) + geom_col(position = 'dodge')
-ggplot(cdata, aes(accuracy, fill = condition)) + geom_histogram() + facet_wrap(~condition)
+ggplot(cdata, aes(accuracy, fill = condition)) + geom_histogram(bins = 15) + facet_wrap(~condition)
+ggplot(cdata, aes(accuracy, fill = condition)) + geom_histogram(bins = 15) + facet_grid(.~condition)
 
 # 9. Display the same data in density plots. 
-ggplot(cdata, aes(accuracy, color = condition)) + geom_density()
+ggplot(cdata, aes(accuracy, fill = condition)) + geom_density() + facet_grid(.~condition)
 
 # 10. Based on the histograms and the density plots - are these data normally 
 # distibuted?
@@ -160,7 +172,8 @@ t.test(accuracy ~ condition, data = cdata, paired = T)
 # 14. Compute the effect size using CohensD.
 library(effsize)
 ?cohensD
-cohensD(accuracy ~ condition, data = cdata)
+cohensD(accuracy ~ condition, data = cdata, method = 'paired')
+# since our data is paired, we need to specify method = 'paired' for the cohensD as well!!!
 
 # 15. Which effect size do we get? How do you interpret this result?
 # The effect size from the Cohen's d calculation is 0.77657 (medium)
@@ -186,7 +199,7 @@ t.test(cdata_wide$right, cdata_wide$wrong, paired = T)
 # function.
 
 # 19. Compute CohensD on the wide format data. What do you notice?
-cohensD(cdata_wide$right, cdata_wide$wrong)
+cohensD(cdata_wide$right, cdata_wide$wrong, method = 'paired')
 # the cohensD on the wide format data is also the same.
 
 # 20. Let's try the t-test again, but for a different question:
@@ -199,16 +212,27 @@ cohensD(cdata_wide$right, cdata_wide$wrong)
 # Store the result in a new variable called "cdat"
 glimpse(data)
 mdat <- melt(data, id.vars = c("Subject", "Gender"),
-              measure.vars = c("accuracy"))
+              measure.vars = c("correct_RT_2.5sd"))
 cdat <- dcast(mdat, Gender + Subject ~ variable, mean, na.rm = T)
+
+# same result as above:
+cdat2 <- cast(data, Subject + Gender ~., mean, value = 'correct_RT_2.5sd', na.rm = T)
+cdat2 <-rename(cdat2, c('(all)' = 'accuracy'))
 # 21. Take a look at cdat using head().
 head(cdat)
+head(cdat2)
 
 # 22. Compute the t-test to compare the accuracy means of female and male 
 # participants.
 # Which t-test do you need and why? How do you interpret the result?
 # We need the independent t-test because the groups are 2 different samples from the population.
-t.test(accuracy ~ Gender, data = cdat)
+t.test(correct_RT_2.5sd ~ Gender, data = cdat)
+t.test(accuracy ~ Gender, data = cdat2)
+# t.test assumption is that your data distribution is normal
+# use Schapiro's test to see if your data is normally distributed
+# your variances should be homogenous --> homoscedasticity 
+# use the Welche's test for that, which R does that for you as part of the t.test :)
+
 # from the t-test, the p-value is 0.7319, which suggest that we cannot reject the null hypothesis
 # for alpha = 0.05. The p-value can be interpreted as the probability that the observed difference in means
 # between the 2 groups is due to chance.
