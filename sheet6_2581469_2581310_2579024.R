@@ -100,6 +100,7 @@ print(lm_data)
 # b) How do you interpret the output? Is the relationship between the two variables 
 # positive or negative?
 # Plot the data points and the regression line.
+
 # The y-intercept is the level of Frequency for a word of Length 0 (6.5015)
 # the slope of -0.2943 suggests a negative correlation between Length and Frequency; As word length
 # increases by 1, the word frequency becomes more sparse.
@@ -126,7 +127,8 @@ ggplot(data, aes(Length, Frequency)) +
 # Let's go back to our digsym data set.
 # Set your wd and load the data frame digsym_clean.csv and store it in a variable.
 # You can download this data frame from the material of week 6: t-test and friends. 
-
+data_dc <- read.csv('digsym_clean.csv')
+glimpse(data_dc)
 
 # b) Suppose you want to predict reaction times in the digit symbol task by 
 # people's age.
@@ -140,22 +142,32 @@ ggplot(data, aes(Length, Frequency)) +
 # In case you're wondering why we still have to do this - like the t-test, 
 # linear regression assumes independence of observations.
 # In other words, one row should correspond to one subject or item only.
-
-
+library(reshape2)
+library(tidyr)
+?cast
+mdata_dc <- melt(data_dc, id.vars = c("Subject", "Age"),
+              measure.vars = c("correct_RT_2.5sd"))
+cdata_dc <- dcast(mdata_dc, Age + Subject ~ variable, mean, na.rm = T)
 # c) Now fit the regression model.
-
+lm_cdata_dc <- lm(correct_RT_2.5sd ~ Age, data = cdata_dc, na.action = na.omit)
 
 # d) Let's go over the output - what's in there?
 # How do you interpret the output?
-
+print(lm_cdata_dc)
+# interpretation: the positive slope (21.22) suggests a positive correlation between the 2 variables.
+# as Age increases, response time also increases by a factor of 21.22.
+# The y-intercept is the level of response time for Subjects at Age 0 (if there were to exist, that is.).
 
 # e) Plot the data points and the regression line. 
-
+ggplot(cdata_dc, aes(Age, correct_RT_2.5sd)) +
+  geom_point(color = 'blue', size = 1) +
+  geom_smooth(method = 'lm', se = F, color = 'red')
 
 # f) Plot a histogram and qq-plot of the residuals. 
 # Does their distribution look like a normal distribution?
-
-
+residuals <- resid(lm_cdata_dc)
+qqnorm(residuals)
+library(MASS)
 # g) Plot Cook's distance for the regression model from c) which estimates the 
 # residuals (i.e. distance between the actual values and the  predicted value on 
 # the regression line) for individual data points in the model.
