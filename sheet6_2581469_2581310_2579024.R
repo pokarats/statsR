@@ -167,11 +167,13 @@ ggplot(cdata_dc, aes(Age, correct_RT_2.5sd)) +
 # Does their distribution look like a normal distribution?
 residuals <- resid(lm_cdata_dc)
 qqnorm(residuals)
-library(MASS)
+install.packages('lindia')
+library(lindia)
+gg_reshist(lm_cdata_dc, bins = 15)
 # g) Plot Cook's distance for the regression model from c) which estimates the 
 # residuals (i.e. distance between the actual values and the  predicted value on 
 # the regression line) for individual data points in the model.
-
+gg_cooksd(lm_cdata_dc)
 
 # h) Judging from the plot in g) it actually looks like we have 1 influential 
 # observation in there that has potential to distort (and pull up) our regression 
