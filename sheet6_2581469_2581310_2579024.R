@@ -95,17 +95,27 @@ cor.test(data$Length, data$Frequency, method = 'spearman')
 # for the variables Frequency (outcome variable) and Length (predictor variable).
 # General form: 
 # "modelname <- lm(outcome ~ predictor, data = dataFrame, na.action = an action)"
-
-
+lm_data <- lm(Frequency ~ Length, data = data, na.action = na.omit)
+print(lm_data)
 # b) How do you interpret the output? Is the relationship between the two variables 
 # positive or negative?
 # Plot the data points and the regression line.
+# The y-intercept is the level of Frequency for a word of Length 0 (6.5015)
+# the slope of -0.2943 suggests a negative correlation between Length and Frequency; As word length
+# increases by 1, the word frequency becomes more sparse.
+ggplot(data, aes(Length, Frequency)) + 
+  geom_point(shape = 21) + geom_abline(slope = -0.2943, intercept = 6.5015)
 
+ggplot(data, aes(Length, Frequency)) + 
+  geom_point(shape = 21) + geom_smooth(method = 'lm', se = F)
 
 # c) Run the plotting command again and have R display the actual words that belong 
 # to each point. 
 # (Don't worry about readability of overlapping words.)
-
+ggplot(data, aes(Length, Frequency)) + 
+  geom_point(color='blue', size = 1) + 
+  geom_text(aes(label = Word, hjust = 0, vjust = 0)) +
+  geom_smooth(method = 'lm', se = F)
 
 #######################
 ### Exercise 3: Regression
