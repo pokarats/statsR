@@ -65,7 +65,7 @@ cor(data$Length, data$Frequency)
 # What about the direction of the effect?
 # the negative number means a negative correlation; i.e. as the predictor variable increases/decreases by one
 # unit point, the response variable decreases/increases by a certain factor in the opposite direction 
-# based on the scale of -1 to 1, 0.43 would suggest a medium correlational effect
+# based on the scale of -1 to 1, -0.43 would suggest a medium correlational effect
 
 # g) Note that we have a large number of tied ranks in word length data 
 # (since there are multiple words with the length of e.g. 5).
@@ -189,7 +189,7 @@ gg_cooksd(lm_cdata_dc) # with lindia library
 
 # with just ggplot and augment()
 ggplot(mod, aes(seq_along(.cooksd), .cooksd)) + 
-  geom_pointrange(aes(ymin = 0, ymax = mod$.cooksd), size = 0.2)
+  geom_pointrange(aes(ymin = 0, ymax = mod$.cooksd), size = 0.2) +
   xlab('Observation Number')+ ylab('Cook\'s distance') 
   
 # h) Judging from the plot in g) it actually looks like we have 1 influential 
