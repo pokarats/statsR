@@ -73,7 +73,7 @@ cor(data$Length, data$Frequency)
 # Kendall's tau instead of the Pearson correlation coefficient (which is the default).
 # How do you interpret the difference between these 2 correlation coefficients?
 cor(data$Length, data$Frequency, method = 'kendall')
-# Kendall's coefficient doesn't assume that you sample follows a normal distribution.
+# Kendall's coefficient doesn't assume that your sample follows a normal distribution.
 # It's also able to analyze data with tied values i.e. multiple y-values for same x-values.
 # Kendall's coefficient also describes how dependent the two variables are on each other
 
@@ -169,7 +169,7 @@ ggplot(cdata_dc, aes(Age, correct_RT_2.5sd)) +
 
 # f) Plot a histogram and qq-plot of the residuals. 
 # Does their distribution look like a normal distribution?
-library(broom)
+
 residuals <- resid(lm_cdata_dc)
 qqnorm(residuals)
 install.packages('lindia')
@@ -177,6 +177,7 @@ library(lindia)
 gg_reshist(lm_cdata_dc, bins = 15)
 
 # another way just using straightforward ggplot
+library(broom)
 mod <- lm_cdata_dc %>% augment()
 ggplot(mod, aes(.resid)) + geom_histogram(bins = 15)
 
@@ -221,7 +222,7 @@ print(lm_cast2)
 # How does that change your interpretation of whether age is predictive of RTs?
 # The slope is roughly half of the previous model that included the outlier data point.
 # This suggests that perhaps the association between age and RTs is not as strong as previously thought or that
-# the association between age and RTs are not as strong for population groups younger than 45.
+# the association between age and RTs is not as strong for population groups younger than 45.
 
 # l) Plot the regression line again - notice the difference in slope in 
 # comparison to our earlier model fit?
