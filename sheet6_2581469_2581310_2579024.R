@@ -84,7 +84,7 @@ cor.test(data$Length, data$Frequency, method = 'kendall')
 ?cor.test
 #cor.test also includes z score and p-value in addition to the rank correlation coefficient
 # The p-value of 8.907*10^-5 suggests that it very unlikely that the null hypothesis is true. So, we can reject
-# the null hypothesis and conclude that the relationship between the 2 variables is due to chance.
+# the null hypothesis and conclude that the relationship between the 2 variables is NOT due to chance.
 
 # i) Finally, also calculate Spearman's rank correlation for the same data.
 cor.test(data$Length, data$Frequency, method = 'spearman')
