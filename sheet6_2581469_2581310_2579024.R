@@ -105,7 +105,7 @@ print(lm_data)
 
 # The y-intercept is the expected Frequency for a word of Length 0 (6.5015)
 # The slope of -0.2943 suggests a negative correlation between Length and Frequency; as word length
-# increases by 1 character, the word frequency becomes more sparse.
+# increases by 1 character unit, the word frequency becomes more sparse by a factor of 0.2943
 ggplot(data, aes(Length, Frequency)) + 
   geom_point(shape = 21) + geom_abline(slope = -0.2943, intercept = 6.5015)
 
@@ -158,9 +158,13 @@ lm_cdata_dc <- lm(correct_RT_2.5sd ~ Age, data = cdata_dc, na.action = na.omit)
 # d) Let's go over the output - what's in there?
 # How do you interpret the output?
 print(lm_cdata_dc)
+summary(lm_cdata_dc) # use summary to get all the information
 # interpretation: the positive slope (21.22) suggests a positive correlation between the 2 variables.
-# as Age increases, response time also increases by a factor of 21.22.
+# as Age increases by 1 year or unit, response time also increases by a factor of 21.22.
 # The y-intercept is the expected level of response time for Subjects at Age 0 (if that were to exist, that is.).
+
+# interpreting the p-value; so p-value of 0.009324 suggests that we can reject the null hypothesis and conclude that
+# age's influence on RT is statisitically significant.
 
 # e) Plot the data points and the regression line. 
 ggplot(cdata_dc, aes(Age, correct_RT_2.5sd)) +
@@ -215,6 +219,7 @@ cast2 <- cdata_dc %>% filter(Age < 45)
 # j) Fit the model from c) again, using cast2, and take a good look at the output.
 lm_cast2 <- lm(correct_RT_2.5sd ~ Age, data = cast2, na.action = na.omit)
 print(lm_cast2)
+summary(lm_cast2)
 
 
 
@@ -223,6 +228,10 @@ print(lm_cast2)
 # The slope is roughly half of the previous model that included the outlier data point.
 # This suggests that perhaps the association between age and RTs is not as strong as previously thought or that
 # the association between age and RTs is not as strong for population groups younger than 45.
+
+# from the p-value in the F-statistic of 0.2751, removing the outlier data point significant changes the
+# interpretation of our model. The relationahip between RT and Age is no longer statistically significant!
+# The variability and relationship we observed then is attributed to chance. (accepting the null hypothesis).
 
 # l) Plot the regression line again - notice the difference in slope in 
 # comparison to our earlier model fit?
