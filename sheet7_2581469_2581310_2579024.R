@@ -103,10 +103,11 @@ mdata <- melt(data_w1, id.vars = c("pair", "period"),
 casted_data <- dcast(mdata, pair + period ~ variable, mean, na.rm = T)
 
 # b) Build boxplots of the average speed depending on "period".
-ggplot(casted_data, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
+ggplot(casted_data, aes(period, speed, group_by(period))) + geom_boxplot() # + facet_wrap(~period)
 
 # c) Looking at the boxplots, is there a difference between the periods?
-
+# The mean speed is much lower in period 2 than in 1 and 3. There also seems to be quite a difference
+# between the mean speed in period 1 and 3.
 
 # Now, let's check the ANOVA assumptions and whether they are violated or not 
 # and why.
@@ -115,25 +116,65 @@ ggplot(casted_data, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
 duplicated(casted_data)
-#no repeated measures
+# no repeated measures
 
 # e) Normality of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
+shapiro.test(casted_data$speed)
+# The Shapiro-Wilk test's null hypothesis is that the sample distribution is normal.
+# So, the p-value of 0.3494, which is higher than alpha == 0.05, suggests that the Speed variable has a normal
+# distribution
+?shapiro.test
+qqnorm(casted_data$speed)
+
+# to verify that our residuals ar normal, we can use the Shapiro Wilk Test and also plot the QQ-plot of the
+# residuals
+mod <- lm(speed ~ period, data = casted_data)
+summary(mod)
+mod_augmented <- mod %>% augment()
+print(mod_augmented)
+shapiro.test(mod_augmented$.resid)
+qqnorm(mod_augmented$.resid)
+qqline(mod_augmented$.resid)
+
+# based on the Shapiro - Wilk test p-value of 0.1662, which is higher than alpha of 0.05, we can conclude
+# that the residuals follow a normal distribution. Our QQ plot also confirms this as the points do somewhat
+# follow a straight line.
 
 # f) Homogeneity of variance of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
+plot(mod)
+# based on the Residuals vs Fitted values plot of the model, it seems that the residuals vary somewhat the same way
+# across all values
+
+# Checking with the Breusch - Pagan test; since our residuals follow the normal distribution, we should be
+# able to use this test to see if there's heteroskasdicity in the residuals
+install.packages('lmtest')
+library(lmtest)
+bptest(mod)
+# The BP test null hypothesis is homoskedasticity i.e. the residuals variances are all equal
+# BP p-value of 0.6996 means that we cannot reject the null hypothesis, so that means our residuals
+# follow the homogeneity assumption. Hence, we should be able to do regression on this data set.
 
 # g) Now we are ready to perform 1-way ANOVA: please use the function aov() on the 
 # speed depending on the period, report p-value and interpret the result in details.
-
+summary(aov(speed ~ period, data = casted_data))
+# The p-value from 1-way ANOVA of 0.382 suggests that we cannot reject the null hypothesis.
+# Thus, we conclude that the variability in speed is not dependent on the period of time a sign has been
+# put up on the road.
 
 # h) Please do pairwise t-tests of the same variables as in g) using pairwise.t.test().
-
+?t.test
+t.test(speed ~ period, data = casted_data, subset = period %in% c(1,2), paired = T)
+t.test(speed ~ period, data = casted_data, subset = period %in% c(1,3), paired = T)
+t.test(speed ~ period, data = casted_data, subset = period %in% c(2,3), paired = T)
 
 # i) Report the pairwise p-values and interpret the result in detail.
-
+# since there are 3 levels in our period predictor variable, we have to subset the period variable into groups of
+# 2 levels so we have 3 p-values based on running the t-tests on period in 1,2, in 1,3, and in 2,3.
+# p-values for periods 1,2 == 0.3332; periods 1,3 == 0.004334, periods 2,3 0.04114
 
 # j) Try to use no adjustment for pairwise testing and then the Bonferroni correction.
 # Does the result change?
