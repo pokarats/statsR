@@ -75,11 +75,17 @@ grid.arrange(ggp1, ggp2, ncol = 2)
 
 # e) What can you conclude looking at the plots? What can you say about people's 
 # behaviour in different periods: before, immediately after and after some time?
+# From the boxplots it seems that the average speed is slight lower, but there are just as many
+# individuals who drive excessively faster (outliers). After some time, it seems the average speed
+# is back to being as high if not higher than when there was no sign.
 
 
 # f) What are your ideas about why the data with warning==2 (sites where no sign was 
 # erected) was collected?
 
+# In comparison to the site where a warning sign was erected, the average speed doesn't seem to vary
+# that much when no sign is erected at all, although it seems that there are more instances of people 
+# going excessively faster.
 
 #######################
 ### Exercise 2: 1-way ANOVA
