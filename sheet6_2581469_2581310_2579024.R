@@ -105,7 +105,7 @@ print(lm_data)
 
 # The y-intercept is the expected Frequency for a word of Length 0 (6.5015)
 # The slope of -0.2943 suggests a negative correlation between Length and Frequency; as word length
-# increases by 1 character, the word frequency becomes more sparse.
+# increases by 1 character unit, the word frequency becomes more sparse by a factor of 0.2943
 ggplot(data, aes(Length, Frequency)) + 
   geom_point(shape = 21) + geom_abline(slope = -0.2943, intercept = 6.5015)
 
