@@ -30,7 +30,7 @@
 
 library(boot)
 library(ggplot2)
-library(reshape)
+library(reshape2)
 library(dplyr)
 
 # This time we will be working with the "amis" data frame (package 'boot') that has 
@@ -114,11 +114,6 @@ duplicated(casted_data)
 # e) Normality of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
-ggplot(casted_data, aes(x= speed, fill=period)) + 
-  geom_bar(binwidth = 1.5, alpha = .5, position = "identity")
-
-ggplot(casted_data, aes(pair, speed, color=period)) + geom_point()
-
 data_lm = lm(speed ~ period, casted_data)
 data_stdres <- rstandard(data_lm)
 qqnorm(data_stdres)
@@ -127,7 +122,6 @@ summary(data_lm)
 # f) Homogeneity of variance of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
-install.packages("car")
 library(car)
 leveneTest(speed ~ period, data=casted_data)
 # g) Now we are ready to perform 1-way ANOVA: please use the function aov() on the 
