@@ -114,24 +114,36 @@ duplicated(casted_data)
 # e) Normality of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
+ggplot(casted_data, aes(x= speed, fill=period)) + 
+  geom_bar(binwidth = 1.5, alpha = .5, position = "identity")
 
+ggplot(casted_data, aes(pair, speed, color=period)) + geom_point()
+
+data_lm = lm(speed ~ period, casted_data)
+data_stdres <- rstandard(data_lm)
+qqnorm(data_stdres)
+qqline(data_stdres)
+summary(data_lm)
 # f) Homogeneity of variance of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
-
+install.packages("car")
+library(car)
+leveneTest(speed ~ period, data=casted_data)
 # g) Now we are ready to perform 1-way ANOVA: please use the function aov() on the 
 # speed depending on the period, report p-value and interpret the result in details.
-
+aov_data <- aov(speed ~ period, data=casted_data)
+summary(aov_data)
 
 # h) Please do pairwise t-tests of the same variables as in g) using pairwise.t.test().
-
+pairwise.t.test(casted_data$speed, casted_data$period)
 
 # i) Report the pairwise p-values and interpret the result in detail.
 
 
 # j) Try to use no adjustment for pairwise testing and then the Bonferroni correction.
 # Does the result change?
-
+pairwise.t.test(casted_data$speed, casted_data$period, p.adjust.method = "bonferroni")
 
 #######################
 ### Exercise 3: 2-way ANOVA
@@ -141,15 +153,21 @@ duplicated(casted_data)
 # So let's turn back to our initial dataset amis (not its subset with warning==1).
 # First, we need to average the speed over each `pair`, `warning` and `period
 # Cast your data again and assign the resuts to casted_data2.
-
+mdata <- melt(data, id.vars = c("pair", "warning", "period"),
+              measure.vars = c("speed"))
+casted_data2 <- dcast(mdata, pair + warning + period ~ variable, mean, na.rm = T)
 # b) Calculate the mean for each of the 6 possible pairs of `period` and `warning`.
-
+means <- with(casted_data2, aggregate(speed, by=list(pair = pair, warning=warning), FUN=mean, na.rm=TRUE))
+colnames(means)[3] <- "speed"
 
 # c) Do you think there is a significant difference between some of the groups?
-
+ggplot(means, aes(pair, speed, color=warning)) + geom_point()
+#There is a very significant difference in group 7
 
 # d) Now apply the 2-way ANOVA: please use the function aov() on the speed depending 
 # on the period and warning.
+aov(speed ~ period*warning, data=casted_data2)
+summary(aov(speed ~ period*warning, data=casted_data2))
 # Report the p-value and interpret the result in detail.
 
 
