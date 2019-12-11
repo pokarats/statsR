@@ -31,6 +31,7 @@
 library(boot)
 library(ggplot2)
 library(reshape)
+library(dplyr)
 
 # This time we will be working with the "amis" data frame (package 'boot') that has 
 # 8437 rows and 4 columns.
@@ -48,21 +49,29 @@ library(reshape)
 
 # a) For the further reference please use ?amis. 
 # It may take some time to understand the dataset. 
-
+?amis
 
 # b) Load the dataset, store it into a variable called "data", and briefly inspect it. 
 # Feel free to make some plots and calculate some statistics in order to understand 
 # the data.
-
-
+data <- amis
+glimpse(data)
+head(data)
 # c) All our columns have numeric type. Convert the categorial columns to factors.
-
+cols <- c("period", "warning", "pair")
+data[cols] <- lapply(data[cols], factor)
+glimpse(data)
 
 # d) Plot boxplots for the distribution of `speed` for each of the `period` values 
 # (before, immediately after and after some time). Build 2 plots (each containing 3 
 # boxplots) side by side depending on the `warning` variable.
 # (For all plots here and below please use ggplot)
-
+library(gridExtra)
+data_w1 <- filter(data, warning==1)
+data_w2 <- filter(data, warning==2)
+ggp1 <- ggplot(data_w1, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
+ggp2 <- ggplot(data_w2, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
+grid.arrange(ggp1, ggp2, ncol = 2)  
 
 # e) What can you conclude looking at the plots? What can you say about people's 
 # behaviour in different periods: before, immediately after and after some time?
@@ -82,10 +91,13 @@ library(reshape)
 # Therefore first subset your data to filter out warning==2 and then apply cast() 
 # to average "speed" over each "pair" and "period". 
 # Assign this new data frame to the variable casted_data.
-
+data_w1 <- filter(data, warning==1)
+mdata <- melt(data_w1, id.vars = c("pair", "period"),
+                 measure.vars = c("speed"))
+casted_data <- dcast(mdata, pair + period ~ variable, mean, na.rm = T)
 
 # b) Build boxplots of the average speed depending on "period".
-
+ggplot(casted_data, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
 
 # c) Looking at the boxplots, is there a difference between the periods?
 
@@ -96,6 +108,8 @@ library(reshape)
 # d) Independence assumption
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
+duplicated(casted_data)
+#no repeated measures
 
 # e) Normality of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
