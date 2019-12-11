@@ -14,8 +14,8 @@
 ## the assignment graded as complete. 
 
 ## Please write below your (and your teammates) name, matriculation number. 
-## Name:
-## Matriculation number:
+## Name: Noon Pokaratsiri Goldstein, Pauline Sander, Axel Allen
+## Matriculation number: 2581469, 2581310, 2579024
 
 ## Change the name of the file by adding your matriculation numbers
 ## (exercise0N_firstID_secondID_thirdID.R)
