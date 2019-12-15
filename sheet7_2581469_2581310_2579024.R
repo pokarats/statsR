@@ -75,11 +75,17 @@ grid.arrange(ggp1, ggp2, ncol = 2)
 
 # e) What can you conclude looking at the plots? What can you say about people's 
 # behaviour in different periods: before, immediately after and after some time?
+# From the boxplots it seems that the average speed is slight lower, but there are just as many
+# individuals who drive excessively faster (outliers). After some time, it seems the average speed
+# is back to being as high if not higher than when there was no sign.
 
 
 # f) What are your ideas about why the data with warning==2 (sites where no sign was 
 # erected) was collected?
 
+# In comparison to the site where a warning sign was erected, the average speed doesn't seem to vary
+# that much when no sign is erected at all, although it seems that there are more instances of people 
+# going excessively faster.
 
 #######################
 ### Exercise 2: 1-way ANOVA
@@ -97,10 +103,11 @@ mdata <- melt(data_w1, id.vars = c("pair", "period"),
 casted_data <- dcast(mdata, pair + period ~ variable, mean, na.rm = T)
 
 # b) Build boxplots of the average speed depending on "period".
-ggplot(casted_data, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
+ggplot(casted_data, aes(period, speed, group_by(period))) + geom_boxplot() # + facet_wrap(~period)
 
 # c) Looking at the boxplots, is there a difference between the periods?
-
+# The mean speed is much lower in period 2 than in 1 and 3. There also seems to be quite a difference
+# between the mean speed in period 1 and 3.
 
 # Now, let's check the ANOVA assumptions and whether they are violated or not 
 # and why.
@@ -109,13 +116,20 @@ ggplot(casted_data, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
 duplicated(casted_data)
-#no repeated measures
+# no repeated measures
 
 # e) Normality of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
+
 data_lm = lm(speed ~ period, casted_data)
 data_stdres <- rstandard(data_lm)
+shapiro.test(data_stdres)
+
+# based on the Shapiro - Wilk test p-value of 0.1662, which is higher than alpha of 0.05, we can conclude
+# that the residuals follow a normal distribution. Our QQ plot also confirms this as the points do somewhat
+# follow a straight line.
+
 qqnorm(data_stdres)
 qqline(data_stdres)
 summary(data_lm)
@@ -128,6 +142,9 @@ leveneTest(speed ~ period, data=casted_data)
 # speed depending on the period, report p-value and interpret the result in details.
 aov_data <- aov(speed ~ period, data=casted_data)
 summary(aov_data)
+# The p-value from 1-way ANOVA of 0.382 suggests that we cannot reject the null hypothesis.
+# Thus, we conclude that the variability in speed is not dependent on the period of time a sign has been
+# put up on the road.
 
 # h) Please do pairwise t-tests of the same variables as in g) using pairwise.t.test().
 pairwise.t.test(casted_data$speed, casted_data$period)
