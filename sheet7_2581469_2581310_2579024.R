@@ -75,6 +75,7 @@ grid.arrange(ggp1, ggp2, ncol = 2)
 
 # e) What can you conclude looking at the plots? What can you say about people's 
 # behaviour in different periods: before, immediately after and after some time?
+
 # From the boxplots it seems that the average speed is slight lower, but there are just as many
 # individuals who drive excessively faster (outliers). After some time, it seems the average speed
 # is back to being as high if not higher than when there was no sign.
@@ -106,6 +107,7 @@ casted_data <- dcast(mdata, pair + period ~ variable, mean, na.rm = T)
 ggplot(casted_data, aes(period, speed, group_by(period))) + geom_boxplot() # + facet_wrap(~period)
 
 # c) Looking at the boxplots, is there a difference between the periods?
+
 # The mean speed is much lower in period 2 than in 1 and 3. There also seems to be quite a difference
 # between the mean speed in period 1 and 3.
 
@@ -143,7 +145,7 @@ leveneTest(speed ~ period, data=casted_data)
 aov_data <- aov(speed ~ period, data=casted_data)
 summary(aov_data)
 # The p-value from 1-way ANOVA of 0.382 suggests that we cannot reject the null hypothesis.
-# Thus, we conclude that the variability in speed is not dependent on the period of time a sign has been
+# Thus, we conclude that the variability in speed is not dependent on the period of time the sign has been
 # put up on the road.
 
 # h) Please do pairwise t-tests of the same variables as in g) using pairwise.t.test().
@@ -151,10 +153,18 @@ pairwise.t.test(casted_data$speed, casted_data$period)
 
 # i) Report the pairwise p-values and interpret the result in detail.
 
+# The p-values for the difference in speeds between period 1 & 2 and between period 1 & 3 are both 0.81. 
+# The p-value for the difference in speeds between period 2 & 3 is 0.51.
+# All the 3 p-values are greater than the 0.05 significant level, which suggests that any differences in speeds
+# we may have observed in our data between the periods are simply due to chance. i.e. there's really no difference
+# in speeds.
 
 # j) Try to use no adjustment for pairwise testing and then the Bonferroni correction.
 # Does the result change?
 pairwise.t.test(casted_data$speed, casted_data$period, p.adjust.method = "bonferroni")
+
+# With the adjustment, the p-values for the differences in speeds between period 1&2 and between period 1&3
+# are now 1.00, which doesn't change our conclusion regarding accepting the null hypothesis.
 
 #######################
 ### Exercise 3: 2-way ANOVA
@@ -181,8 +191,19 @@ aov(speed ~ period*warning, data=casted_data2)
 summary(aov(speed ~ period*warning, data=casted_data2))
 # Report the p-value and interpret the result in detail.
 
+# The only p-value that's less than alpha = 0.05 is the p-value from the F-ratio from speed ~ warning, which is
+# 0.00488. This suggests that the variability in speed can be explained by having a warning sign.
+
+# Since the p-value for the period factor is > 0.05 (0.335), we can conclue that the variability in speed is
+# not dependent on the period of time the sign has been put up.
+
+# The p-value of 0.69975 between 'period' and 'warning' suggests that there's no interactional effects between
+# the two independent factors.
 
 # e) What do you conclude about the behaviour of drivers based on the 2-way ANOVA?
 
+# Based on the 2-way ANOVA, we can conclude that the presence of a warning sign has a statistically significant
+# effect on drivers' speed. Based on the speed grouped by warning plot, we may conclude more specifically that
+# drivers are likely to drive faster when there's no warning sign.
 
 
