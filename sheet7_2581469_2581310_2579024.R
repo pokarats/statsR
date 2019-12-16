@@ -69,8 +69,8 @@ glimpse(data)
 library(gridExtra)
 data_w1 <- filter(data, warning==1)
 data_w2 <- filter(data, warning==2)
-ggp1 <- ggplot(data_w1, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
-ggp2 <- ggplot(data_w2, aes(period, speed)) + geom_boxplot() + facet_wrap(~period)
+ggp1 <- ggplot(data_w1, aes(period, speed)) + geom_boxplot() # + facet_wrap(~period)
+ggp2 <- ggplot(data_w2, aes(period, speed)) + geom_boxplot() # + facet_wrap(~period)
 grid.arrange(ggp1, ggp2, ncol = 2)  
 
 # e) What can you conclude looking at the plots? What can you say about people's 
