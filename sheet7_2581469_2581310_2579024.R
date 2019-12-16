@@ -76,17 +76,17 @@ grid.arrange(ggp1, ggp2, ncol = 2)
 # e) What can you conclude looking at the plots? What can you say about people's 
 # behaviour in different periods: before, immediately after and after some time?
 
-# From the boxplots it seems that the average speed is slight lower, but there are just as many
-# individuals who drive excessively faster (outliers). After some time, it seems the average speed
-# is back to being as high if not higher than when there was no sign.
-
+# From the first boxplot it seems that the average speed is slightly lower right after the sign has been put
+# up, but there are just as many individuals who drive excessively faster (outliers). 
+# After some time, it seems the average speed is back to being as high if not higher than when there was no sign, 
+# as shown in the first boxplot. In comparison to the site where a warning sign was erected, the average speed doesn't seem to vary
+# that much when no sign is erected at all, although it seems that there are more instances of people 
+# going excessively faster.
 
 # f) What are your ideas about why the data with warning==2 (sites where no sign was 
 # erected) was collected?
 
-# In comparison to the site where a warning sign was erected, the average speed doesn't seem to vary
-# that much when no sign is erected at all, although it seems that there are more instances of people 
-# going excessively faster.
+# This is so that we have a control group for the speeds at similar locations.
 
 #######################
 ### Exercise 2: 1-way ANOVA
@@ -109,8 +109,9 @@ ggplot(casted_data, aes(period, speed, group_by(period))) + geom_boxplot() # + f
 # c) Looking at the boxplots, is there a difference between the periods?
 
 # The mean speed is much lower in period 2 than in 1 and 3. There also seems to be quite a difference
-# between the mean speed in period 1 and 3.
-
+# between the mean speed in period 1 and 3. In period 2, there are more extreme speeds that are above the average 
+# speed while in period 1 and 3, there are more speed variabilities that lower than the average speed.
+ 
 # Now, let's check the ANOVA assumptions and whether they are violated or not 
 # and why.
 
