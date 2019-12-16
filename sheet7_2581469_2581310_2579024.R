@@ -118,8 +118,11 @@ ggplot(casted_data, aes(period, speed, group_by(period))) + geom_boxplot() # + f
 # d) Independence assumption
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
-duplicated(casted_data)
-# no repeated measures
+
+# There is no way to test for the independence assumption, but from the fact that the samples were
+# collected at different places and with some time between the different measurements and with
+# different cars, it can be concluded that the independence assumption probably is satisfied by 
+# the experiment setup.
 
 # e) Normality of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
@@ -129,20 +132,27 @@ data_lm = lm(speed ~ period, casted_data)
 data_stdres <- rstandard(data_lm)
 shapiro.test(data_stdres)
 
-# based on the Shapiro - Wilk test p-value of 0.1662, which is higher than alpha of 0.05, we can conclude
+# Based on the Shapiro - Wilk test p-value of 0.1662, which is higher than alpha of 0.05, we can conclude
 # that the residuals follow a normal distribution. Our QQ plot also confirms this as the points do somewhat
 # follow a straight line.
 
 qqnorm(data_stdres)
 qqline(data_stdres)
 summary(data_lm)
+
 # f) Homogeneity of variance of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
+
 library(car)
 leveneTest(speed ~ period, data=casted_data)
+
+# Since p>0.05, the null hypothesis shouldn't be rejected. Hence, it should be assumed that the 
+# homogeneity assumption holds.
+
 # g) Now we are ready to perform 1-way ANOVA: please use the function aov() on the 
 # speed depending on the period, report p-value and interpret the result in details.
+
 aov_data <- aov(speed ~ period, data=casted_data)
 summary(aov_data)
 # The p-value from 1-way ANOVA of 0.382 suggests that we cannot reject the null hypothesis.
@@ -150,6 +160,7 @@ summary(aov_data)
 # put up on the road.
 
 # h) Please do pairwise t-tests of the same variables as in g) using pairwise.t.test().
+
 pairwise.t.test(casted_data$speed, casted_data$period)
 
 # i) Report the pairwise p-values and interpret the result in detail.
@@ -162,6 +173,7 @@ pairwise.t.test(casted_data$speed, casted_data$period)
 
 # j) Try to use no adjustment for pairwise testing and then the Bonferroni correction.
 # Does the result change?
+
 pairwise.t.test(casted_data$speed, casted_data$period, p.adjust.method = "bonferroni")
 
 # With the adjustment, the p-values for the differences in speeds between period 1&2 and between period 1&3
@@ -175,19 +187,24 @@ pairwise.t.test(casted_data$speed, casted_data$period, p.adjust.method = "bonfer
 # So let's turn back to our initial dataset amis (not its subset with warning==1).
 # First, we need to average the speed over each `pair`, `warning` and `period
 # Cast your data again and assign the resuts to casted_data2.
+
 mdata <- melt(data, id.vars = c("pair", "warning", "period"),
               measure.vars = c("speed"))
 casted_data2 <- dcast(mdata, pair + warning + period ~ variable, mean, na.rm = T)
+
 # b) Calculate the mean for each of the 6 possible pairs of `period` and `warning`.
+
 means <- with(casted_data2, aggregate(speed, by=list(pair = pair, warning=warning), FUN=mean, na.rm=TRUE))
 colnames(means)[3] <- "speed"
 
 # c) Do you think there is a significant difference between some of the groups?
+
 ggplot(means, aes(pair, speed, color=warning)) + geom_point()
 #There is a very significant difference in group 7
 
 # d) Now apply the 2-way ANOVA: please use the function aov() on the speed depending 
 # on the period and warning.
+
 aov(speed ~ period*warning, data=casted_data2)
 summary(aov(speed ~ period*warning, data=casted_data2))
 # Report the p-value and interpret the result in detail.
@@ -206,5 +223,3 @@ summary(aov(speed ~ period*warning, data=casted_data2))
 # Based on the 2-way ANOVA, we can conclude that the presence of a warning sign has a statistically significant
 # effect on drivers' speed. Based on the speed grouped by warning plot, we may conclude more specifically that
 # drivers are likely to drive faster when there's no warning sign.
-
-
