@@ -39,24 +39,40 @@
 #    mom_hs indicates whether the mother has a high school degree
 #    1 = high school education, 0 = no high school degree.
 
-
+data <- read.delim('kidiq.txt', sep = " ")
+summary(data)
 
 # b) Plot kid_score against mom_iq in a scatter plot, and add a regression line 
 #    (kid_score should be the response variable and mom_iq the predictor 
 #    variable) to the plot. 
 #    Name the plot and the axis in sensible ways.
 
+theme_update(plot.title = element_text(hjust = 0.5))
+ggplot(data = data, aes(mom_iq, kid_score)) +
+  ggtitle('Plot of kid_score and mom_iq') +
+  geom_point(shape = 21) +
+  geom_smooth(method = 'lm', se = F)
+  
+
 
 
 # c) Calculate a simple regression model for kid_score with mom_hs as a 
 #    predictor and interpret the results.
+model <- lm(kid_score ~ mom_hs, data = data)
+summary(model)
 
 
+# based on the F-statistic p-value of 5.957 * 10^-7 at alpha = 0.05, the variability in kid_score can be said
+# to be influenced by mom_hs. The slope of 11.771 on the regression line suggests that for every unit point
+# increase in mom_hs, kid_score also increases by the factor of 11.771.
 
 # d) Next, fit a regression model with two predictors: mom_hs and mom_iq. 
 #    Interpret the model and compare to the previous model.
+summary(aov(kid_score ~ mom_hs * mom_iq, data = data))
 
-
+# considering the 2 predictors, the regression model P-values for mom_hs, mom_iq, and mom_hs:mom_iq are all
+# less than the alpha level of 0.05. This suggests that the variability in kid_score are influenced by both mom_hs
+# and mom_iq and that there's also a relationship between mom_hs and mom_iq.
 
 # e) Now plot a model where both predictors are shown. Do this by plotting 
 #    data points for mothers with high school degree==1 in one color and those 
