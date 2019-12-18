@@ -124,13 +124,17 @@ ggplot(casted_data, aes(period, speed, group_by(period))) + geom_boxplot() # + f
 # different cars, it can be concluded that the independence assumption probably is satisfied by 
 # the experiment setup.
 
+# we also need to assume that the same car doesn't drive through both checkpoints.
+head(casted_data)
+
 # e) Normality of residuals
 # (Figure out the best way to check this assumption and give a detailed justified 
 # answer to whether it is violated or not.)
 
 data_lm = lm(speed ~ period, casted_data)
 data_stdres <- rstandard(data_lm)
-shapiro.test(data_stdres)
+shapiro.test(data_stdres) # null hypothesis for the Shapiro-Wilk Normality Test is that our residuals do not differ
+# from the normal distribution, i.e. our residuals follow a normal distribution
 
 # Based on the Shapiro - Wilk test p-value of 0.1662, which is higher than alpha of 0.05, we can conclude
 # that the residuals follow a normal distribution. Our QQ plot also confirms this as the points do somewhat
@@ -147,6 +151,8 @@ summary(data_lm)
 library(car)
 leveneTest(speed ~ period, data=casted_data)
 
+# there's also the Barlett's Test, but Levene Test is more reliable.
+
 # Since p>0.05, the null hypothesis shouldn't be rejected. Hence, it should be assumed that the 
 # homogeneity assumption holds.
 
@@ -155,11 +161,16 @@ leveneTest(speed ~ period, data=casted_data)
 
 aov_data <- aov(speed ~ period, data=casted_data)
 summary(aov_data)
-# The p-value from 1-way ANOVA of 0.382 suggests that we cannot reject the null hypothesis.
+# The p-value from 1-way ANOVA of 0.382 suggests that we cannot reject the null hypothesis as it's higher than
+# the significant value alpha of 0.05.
 # Thus, we conclude that the variability in speed is not dependent on the period of time the sign has been
 # put up on the road.
 
 # h) Please do pairwise t-tests of the same variables as in g) using pairwise.t.test().
+
+# in this case it's not quite useful as we know that there's no difference between different periods avg speeds.
+# However, if we did find that there's a significant diference due to the indepedent variable, the T-Test will 
+# tell us which of the levels actually have an effect on the dependent variable.
 
 pairwise.t.test(casted_data$speed, casted_data$period)
 
@@ -173,6 +184,9 @@ pairwise.t.test(casted_data$speed, casted_data$period)
 
 # j) Try to use no adjustment for pairwise testing and then the Bonferroni correction.
 # Does the result change?
+
+# The adjustment is necessary to adjust for the higher probability of Type I error that increases with repeated
+# test by adjusting the alpha level. Bonferroni = alpha / number of repetitions
 
 pairwise.t.test(casted_data$speed, casted_data$period, p.adjust.method = "bonferroni")
 
@@ -210,7 +224,10 @@ summary(aov(speed ~ period*warning, data=casted_data2))
 # Report the p-value and interpret the result in detail.
 
 # The only p-value that's less than alpha = 0.05 is the p-value from the F-ratio from speed ~ warning, which is
-# 0.00488. This suggests that the variability in speed can be explained by having a warning sign.
+# 0.00488. This suggests that the variability in speed can be explained by having a warning sign. 
+# Since this is the only variable with p-value < alpha, and there're only 2 levels within this variable, 
+# we don't need to perform a T-Test and simply examine the descriptive statistics for this variable to determine
+# which level has higher average speed.
 
 # Since the p-value for the period factor is > 0.05 (0.335), we can conclue that the variability in speed is
 # not dependent on the period of time the sign has been put up.
