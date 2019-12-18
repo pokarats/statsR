@@ -69,7 +69,7 @@ summary(model)
 # d) Next, fit a regression model with two predictors: mom_hs and mom_iq. 
 #    Interpret the model and compare to the previous model.
 summary(aov(kid_score ~ mom_hs * mom_iq, data = data))
-
+model2 <- aov(kid_score ~ mom_hs * mom_iq, data = data)
 # considering the 2 predictors, the regression model P-values for mom_hs, mom_iq, and mom_hs:mom_iq are all
 # less than the alpha level of 0.05. This suggests that the variability in kid_score are influenced by both mom_hs
 # and mom_iq and that there's also a relationship between mom_hs and mom_iq.
@@ -82,15 +82,24 @@ summary(aov(kid_score ~ mom_hs * mom_iq, data = data))
 #    and then plot them along with the original data points:
 #    pred = data.frame(mom_iq=kidiq$mom_iq, mom_hs=kidiq$mom_hs, 
 #    kid_score_pred=fitted(your_model))
+pred = data.frame(mom_iq=data$mom_iq, mom_hs=data$mom_hs, kid_score_pred = fitted(model2))
+
+ggplot(data, aes(mom_iq, kid_score, color = factor(mom_hs))) +
+  geom_point() +
+  geom_line(aes(y = pred$kid_score_pred)) +
+  labs(color = 'mom_hs') +
+  ggtitle('Kid_score and mom_iq Plot')
 
 
 
 # f) Next, we will proceed to a model including an interaction between mom_hs
 #    and mom_iq. Fit the model and interpret your results.
 
-
+# how is this different from aov(kid_score ~ mom_hs * mom_iq) when aov(*) shows the interaction between
+# mom_hs and mom_iq as well?
 
 # g) Next, let's plot the results of this model.
+
 
 
 
