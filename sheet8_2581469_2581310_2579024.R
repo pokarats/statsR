@@ -46,7 +46,7 @@ summary(data)
 #    (kid_score should be the response variable and mom_iq the predictor 
 #    variable) to the plot. 
 #    Name the plot and the axis in sensible ways.
-
+library(ggplot2)
 theme_update(plot.title = element_text(hjust = 0.5))
 ggplot(data = data, aes(mom_iq, kid_score)) +
   ggtitle('Plot of kid_score and mom_iq') +
@@ -103,6 +103,7 @@ summary(model3)
 
 plot(model2, data, which = seq(1:6))
 
+
 # h) Next, let's explore the "predict.lm" function. Please first generate
 #    a new dataframe with one datapoint (a mother with high school degree
 #    and iq of 100). Then, use the predict function to predict the corresponding
@@ -123,8 +124,20 @@ predict(model3, data.frame(mom_hs = 1, mom_iq = 100), level = 0.95)
 
 # j) Finally, do model checking on your model from f), i.e. inspect 
 #    the standard model plots provided by R, and interpret what you see.
-
+par(mfcol = c(2,3))
 plot(lm(kid_score ~ mom_iq + mom_hs, data), which = seq(1:6))
 
 # The plots of model3 and the standard model don't show any major differences (while model and model2 do).
 # This suggests, that the third model is the best model for the given data.
+# The plot suggests that our assumptions for linear regression hold. 
+# The residuals vs fitted plot confirms the homogeneity of variance as the plotted points are uniformly scattered.
+# The Normal Q-Q plot that appears to be a straight line suggests that the residuals follow a normal distriubition.
+# The Cook's Distance plot shows that data observations 7, 213, and 286 may significantly affect the model
+# prediction if pruned.
+# The residuals vs leverage plot similarly shows this as these observation points' residuals are also larger than
+# the other observation data points.
+# The Cook's distance vs Leverage plot shows that most of the observation data points do not have high leverage,
+# only the previously mentioned observations. 
+# Based on these plots checking that the key assumptions for linear regression hold for our data, we should
+# be able to use our fitted model to make some conclusions about the data.
+
