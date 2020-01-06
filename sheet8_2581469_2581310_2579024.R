@@ -39,24 +39,39 @@
 #    mom_hs indicates whether the mother has a high school degree
 #    1 = high school education, 0 = no high school degree.
 
-
+data <- read.delim('kidiq.txt', sep = " ")
+summary(data)
 
 # b) Plot kid_score against mom_iq in a scatter plot, and add a regression line 
 #    (kid_score should be the response variable and mom_iq the predictor 
 #    variable) to the plot. 
 #    Name the plot and the axis in sensible ways.
-
-
-
+library(ggplot2)
+theme_update(plot.title = element_text(hjust = 0.5))
+ggplot(data = data, aes(mom_iq, kid_score)) +
+  ggtitle('Plot of kid_score and mom_iq') +
+  geom_point(shape = 21) +
+  geom_smooth(method = 'lm', se = T)
+  
 # c) Calculate a simple regression model for kid_score with mom_hs as a 
 #    predictor and interpret the results.
 
+model <- lm(kid_score ~ mom_hs, data = data)
+summary(model)
 
+# based on the F-statistic p-value of 5.957 * 10^-7 at alpha = 0.05, the variability in kid_score can be said
+# to be influenced by mom_hs. The slope of 11.771 on the regression line suggests that for every unit point
+# increase in mom_hs, kid_score also increases by the factor of 11.771.
 
 # d) Next, fit a regression model with two predictors: mom_hs and mom_iq. 
 #    Interpret the model and compare to the previous model.
 
+model2 <- aov(kid_score ~ mom_hs + mom_iq, data = data)
+summary(model2)
 
+# considering the 2 predictors, the regression model P-values for mom_hs, and mom_iq are all
+# less than the alpha level of 0.05. This suggests that the variability in kid_score are influenced by both mom_hs
+# and mom_iq.
 
 # e) Now plot a model where both predictors are shown. Do this by plotting 
 #    data points for mothers with high school degree==1 in one color and those 
@@ -67,15 +82,26 @@
 #    pred = data.frame(mom_iq=kidiq$mom_iq, mom_hs=kidiq$mom_hs, 
 #    kid_score_pred=fitted(your_model))
 
+pred = data.frame(mom_iq=data$mom_iq, mom_hs=data$mom_hs, kid_score_pred = fitted(model2))
 
+ggplot(data, aes(mom_iq, kid_score, color = factor(mom_hs))) +
+  geom_point() +
+  geom_line(aes(y = pred$kid_score_pred)) +
+  labs(color = 'mom_hs') +
+  ggtitle('Kid_score and mom_iq/mon_hs plot')
 
 # f) Next, we will proceed to a model including an interaction between mom_hs
 #    and mom_iq. Fit the model and interpret your results.
 
+model3 <- aov(kid_score ~ mom_hs*mom_iq, data)
+summary(model3)
 
+# Additionally, mom_hs:mom_iq is less than alpha level 0.05. This suggests, 
+# that there's also a relationship between mom_hs and mom_iq.
 
 # g) Next, let's plot the results of this model.
 
+plot(model2, data, which = seq(1:6))
 
 
 # h) Next, let's explore the "predict.lm" function. Please first generate
@@ -85,16 +111,33 @@
 #    Please specify the predict function to also give you the 0.95 confidence 
 #    interval.
 
-
+predict(model3, data.frame(mom_hs = 1, mom_iq = 100), level = 0.95)
 
 # i) Meaning of confidence intervals for regression line.
 #    Let's go back to exercise b) and plot again the data points with the 
 #    regression line. By default, there should also be displayed the borders of 
 #    the confidence interval. What is the meaning of this confidence interval?
 
-
+# Close to mom_iq of 100, the confidence interval is narrower while it gets broader closer to the edges of
+# the spectrum. This confidence interval shows the probability that the real model  
+# will lie within the confidence interval of the regression model fitted that we have calculated.
 
 # j) Finally, do model checking on your model from f), i.e. inspect 
 #    the standard model plots provided by R, and interpret what you see.
+par(mfcol = c(2,3))
+plot(lm(kid_score ~ mom_iq + mom_hs, data), which = seq(1:6))
 
+# The plots of model3 and the standard model don't show any major differences (while model and model2 do).
+# This suggests, that the third model is the best model for the given data.
+# The plot suggests that our assumptions for linear regression hold. 
+# The residuals vs fitted plot confirms the homogeneity of variance as the plotted points are uniformly scattered.
+# The Normal Q-Q plot that appears to be a straight line suggests that the residuals follow a normal distriubition.
+# The Cook's Distance plot shows that data observations 7, 213, and 286 may significantly affect the model
+# prediction if pruned.
+# The residuals vs leverage plot similarly shows this as these observation points' residuals are also larger than
+# the other observation data points.
+# The Cook's distance vs Leverage plot shows that most of the observation data points do not have high leverage,
+# only the previously mentioned observations. 
+# Based on these plots checking that the key assumptions for linear regression hold for our data, we should
+# be able to use our fitted model to make some conclusions about the data.
 
