@@ -16,8 +16,8 @@
 
 
 ## Please write below your (and your teammates) name, matriculation number. 
-## Name:
-## Matriculation number:
+## Name: Noon Pokaratsiri Goldstein, Pauline Sander, Axel Allen
+## Matriculation number: 2581469, 2581310, 2579024
 
 ## Change the name of the file by adding your matriculation numbers
 ## (exercise0N_firstID_secondID_thirdID.R)
@@ -53,7 +53,7 @@ library(Matrix)
 # Semantic materials (the experiment is in German, English translation given 
 # for those who don't speak German'):
 
-# Christina schieﬂt / raucht eine Zigarette nach der Arbeit. 
+# Christina schie?t / raucht eine Zigarette nach der Arbeit. 
 # "Christina is shooting / smoking a cigarette after work."
 
 # The crticial word here is "Zigarette", as this would be very surprising in the 
