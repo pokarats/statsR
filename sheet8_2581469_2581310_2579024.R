@@ -62,6 +62,20 @@ summary(model)
 # based on the F-statistic p-value of 5.957 * 10^-7 at alpha = 0.05, the variability in kid_score can be said
 # to be influenced by mom_hs. The slope of 11.771 on the regression line suggests that for every unit point
 # increase in mom_hs, kid_score also increases by the factor of 11.771.
+# Since mom_hs is either 0 for no high school education or 1 for having high school education, the y-intercept of 77.548
+# suggests that kid_score whose mom doesn't have high school education is estimated to be 77.548 and 11.771 IQ points
+# higher in those whose moms have high school education.
+
+# The multiple R-squared of 0.05613 suggest that only 5.61% of kid_score variability is explained by mom_hs.
+# Although the relationship between kid_score and mom_hs is statistically significant, it only accounts for
+# just 5.6% of the variability, which is miniscule.
+
+#5 things to interpret:
+# relation between predictor and dependent variable (+ of - slope)
+# the slope 
+# the intercept
+# significance --> p-value
+# R^2 value
 
 # d) Next, fit a regression model with two predictors: mom_hs and mom_iq. 
 #    Interpret the model and compare to the previous model.
@@ -69,9 +83,20 @@ summary(model)
 model2 <- aov(kid_score ~ mom_hs + mom_iq, data = data)
 summary(model2)
 
+model2_2 <-lm(formula = kid_score ~ mom_hs + mom_iq, data = data)
+summary(model2_2)
+
 # considering the 2 predictors, the regression model P-values for mom_hs, and mom_iq are all
 # less than the alpha level of 0.05. This suggests that the variability in kid_score are influenced by both mom_hs
 # and mom_iq.
+
+# Correlation: there are positive correlations between mom_hs and kid_score as well as mom_iq and kid_score.
+# For every unit point increase in mom's iq score, kid_score increases by 0.56391 unit points.
+# Mom's hs degree increases kid's iq_score by 5.95012 unit points.
+# The intercept is 25.73, but in this case it's not really sensible as it's not realistic to have an iq of 0.
+# The R-squared of 0.2141, considering that the R-squared in the single variable model is 0.561, suggests that
+# delta R-squared (0.2141 - 0.561) is ~0.15. This means that 15% of the variability in kid_score can be attributed
+# to mom_oq variable.
 
 # e) Now plot a model where both predictors are shown. Do this by plotting 
 #    data points for mothers with high school degree==1 in one color and those 
@@ -83,8 +108,8 @@ summary(model2)
 #    kid_score_pred=fitted(your_model))
 
 pred = data.frame(mom_iq=data$mom_iq, mom_hs=data$mom_hs, kid_score_pred = fitted(model2))
-
-ggplot(data, aes(mom_iq, kid_score, color = factor(mom_hs))) +
+data$mom_hs <- as.factor(data$mom_hs)
+ggplot(data, aes(mom_iq, kid_score, color = mom_hs)) +
   geom_point() +
   geom_line(aes(y = pred$kid_score_pred)) +
   labs(color = 'mom_hs') +
@@ -93,13 +118,25 @@ ggplot(data, aes(mom_iq, kid_score, color = factor(mom_hs))) +
 # f) Next, we will proceed to a model including an interaction between mom_hs
 #    and mom_iq. Fit the model and interpret your results.
 
-model3 <- aov(kid_score ~ mom_hs*mom_iq, data)
+model3 <- aov(kid_score ~ mom_hs*mom_iq, data) 
 summary(model3)
+
+model3_2 <-lm(formula = kid_score ~ mom_hs * mom_iq, data = data)
+summary(model3_2)
+
+
+# Interpretation
+# the -0.4843 in the mom_hs:mom_iq affects the slop of mom_iq on kid_score. This means that the interaction
+# between mom_hs:mom_iq decreases the slope of kid_score ~ mom_iq regression line by 0.4843.
+# The model's R^2 value of 0.2301 is higher than the previous model
 
 # Additionally, mom_hs:mom_iq is less than alpha level 0.05. This suggests, 
 # that there's also a relationship between mom_hs and mom_iq.
 
 # g) Next, let's plot the results of this model.
+ggplot(data = data, aes(x = mom_iq, y = kid_score, col = mom_hs)) +
+  geom_point()+
+  geom_smooth(method = 'lm', aes(group = data$mom_hs, col = data$mom_hs))
 
 plot(model2, data, which = seq(1:6))
 
@@ -112,6 +149,7 @@ plot(model2, data, which = seq(1:6))
 #    interval.
 
 predict(model3, data.frame(mom_hs = 1, mom_iq = 100), level = 0.95)
+
 
 # i) Meaning of confidence intervals for regression line.
 #    Let's go back to exercise b) and plot again the data points with the 
