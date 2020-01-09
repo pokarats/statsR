@@ -233,11 +233,12 @@ print(xyplot(AVG_WORD_TIME ~ RELWDINDEX | PARTICIPANT, dat_excluded, aspect = 'x
 # f) Experiment with calculating a linear mixed effects model for this study, 
 #    and draw the appropriate conclusions (give a detailed explanation 
 #    for each model).
-
-
+dat_model = lmer(WORD_TIME ~ RELWDINDEX + ITEM_TYPE + (RELWDINDEX | PARTICIPANT), cdat_e)
+summary(dat_model)
 # g) Let's get back to the dataset 'sleepstudy'. The following plot shows 
 #    subject-specific intercepts and slopes. Adapt this plot for our study 
 #    and draw conclusions.
+print(dotplot(ranef(dat_model, condVar=TRUE), scales = list(x = list(relation = 'free')))[["PARTICIPANT"]])
 
 model = lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
 print(dotplot(ranef(model,condVar=TRUE),  scales = list(x = list(relation = 'free')))
