@@ -33,7 +33,7 @@ library(Matrix)
 #   Read in the data file of your choice (gender.Rdata, sem.Rdata OR relclause.Rdata) 
 #   and assign it to a variable called "dat". 
 #   See a description of the items in the datasets below.
-dat <- read.delim('gender.rdata', sep = ' ')
+dat <- read.delim('gender.txt', sep = ' ')
 summary(dat)
 head(dat)
 # The files contain data from an experiment where people were reading sentences, 
@@ -116,7 +116,7 @@ ggplot(cdat, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) +
   geom_boxplot() +
   ggtitle('Plot of average WORD_TIME per PARTICIPANT by ITEM_TYPE')
 
-# data = dat
+# first plot for relationship between WORD_TIME and ITEM_TYPE
 theme_update(plot.title = element_text(hjust = 0.5))
 ggplot(data = dat, aes(WORD_TIME, color = ITEM_TYPE, fill=ITEM_TYPE)) +
   ggtitle('Plot of WORD_TIME Distribution by ITEM_TYPE') +
@@ -202,14 +202,14 @@ mdat_e <- melt(dat_excluded, id.vars = c("PARTICIPANT", "RELWDINDEX", "ITEM_TYPE
 cdat_e <- dcast(mdat_e,RELWDINDEX + PARTICIPANT + ITEM_TYPE ~ variable, mean, na.rm = T)
 
 print(xyplot(WORD_TIME ~ RELWDINDEX | PARTICIPANT, cdat_e, aspect = 'fill',
-             main = 'Relationship between Average Reading Time and Critical Word',
+             main = 'Relationship between ART and Critical Word',
              groups = ITEM_TYPE, auto.key = list(space = 'right'),
-             par.settings = list(superpose.symbol = list(col = c("brown", "orange")), 
-                                 superpose.line = list(col = c("brown", "orange"))),
+             par.settings = list(superpose.symbol = list(col = c("blue", "orange")), 
+                                 superpose.line = list(col = c("blue", "orange"))),
              layout = c(8,3), type = c('g', 'p', 'r'), 
              index.cond = function(x,y) coef(lm(y ~ x))[1],
              xlab = 'Index Word as the Sentence Progresses',
-             ylab = 'Average Reading Time (ms) by Sentence Type: GG vs GB'))
+             ylab = 'ART (ms) by Sentence Type: GG vs GB'))
 
 # Observation from the plot:
 # Reading time tends to increase after the critical word (i.e. word at index 0), more so for the GB group than
@@ -233,8 +233,10 @@ print(xyplot(AVG_WORD_TIME ~ RELWDINDEX | PARTICIPANT, dat_excluded, aspect = 'x
 # f) Experiment with calculating a linear mixed effects model for this study, 
 #    and draw the appropriate conclusions (give a detailed explanation 
 #    for each model).
+
 dat_model = lmer(WORD_TIME ~ RELWDINDEX + ITEM_TYPE + (RELWDINDEX | PARTICIPANT), cdat_e)
 summary(dat_model)
+
 # g) Let's get back to the dataset 'sleepstudy'. The following plot shows 
 #    subject-specific intercepts and slopes. Adapt this plot for our study 
 #    and draw conclusions.
