@@ -213,7 +213,7 @@ print(xyplot(WORD_TIME ~ RELWDINDEX | PARTICIPANT, cdat_e, aspect = 'fill',
 
 # Observation from the plot:
 # Reading time tends to increase after the critical word (i.e. word at index 0), more so for the GB group than
-# the GG group.
+# the GG group. However, the general tendency is not so clear (as it is the case for the sleep study example)
 
 # f) Experiment with calculating a linear mixed effects model for this study, 
 #    and draw the appropriate conclusions (give a detailed explanation 
