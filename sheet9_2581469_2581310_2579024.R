@@ -140,15 +140,29 @@ ggplot(dat2, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) +
 
 # Considering the length of the sample sentences described, I'm assuming that WORD_TIME unit is in milliseconds
 # as 1000-6000 ms (1-6 seconds) seems reasonable for proficient speakers to read these sentences.
-# From our density plot and the summary of the data, ~90% of the WORD_TIME distribution lie below 2000 ms.
+# From our density plot and the summary of the data, ~90% of the WORD_TIME distribution lie below 3000 ms.
 # Almost all of the data points for WORD_TIME at RELWDINDEX == 0 are also under 3000ms as observed in our boxplot.
 # Considering that it is reasonable to expect readers to take more time to read 'grammatically bad' sentences
-# excluding the outlier data points > 2000 ms, which are mostly in the 'grammatically good' category, seems
+# excluding the outlier data points > 3000 ms, which are mostly in the 'grammatically good' category, seems
 # reasonable. The boxplot of the average WORD_TIME per PARTICIPANT by ITEM_TYPE supports this rationale as well.
 # As observed, in contrast to the Boxplot of WORD_TIME by ITEM_TYPE at Critical Word Index, which shows the 'GB'
 # group to have overall longer WORD_TIME, the average WORD_TIME in the per PARTICIPANT bloxplot is higher in 
 # the 'GG' group than 'GB' group.
 
+dat_excluded <- subset(dat, WORD_TIME <= 3000)
+
+# checking that doing so preserves existing distribution
+ggplot(dat_excluded, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) + 
+  geom_boxplot() +
+  ggtitle('Boxplot of WORD_TIME by ITEM_TYPE')
+
+ggplot(data = dat_excluded, aes(WORD_TIME, color = ITEM_TYPE, fill=ITEM_TYPE)) +
+  ggtitle('Plot of WORD_TIME Distribution by ITEM_TYPE') +
+  geom_density(alpha = 0.6) + 
+  facet_wrap(~ITEM_TYPE)
+
+# Another thought I had was to cut down to < 2000, but I don't have a more compelling justification
+# than that 90% of the datapoints fall under this threshold from the density plot :/ Thoughts?
 dat_excluded2 <- subset(dat, WORD_TIME <= 2000)
 ggplot(dat_excluded2, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) + 
   geom_boxplot() +
@@ -162,7 +176,7 @@ ggplot(data = dat_excluded2, aes(WORD_TIME, color = ITEM_TYPE, fill=ITEM_TYPE)) 
 # d) Make a scatter plot where for each index word as the sentence progresses (RELWDINDEX),
 #    the average reading time is shown for each of the two conditions (ITEM_TYPE).
 #    Please use two different colours for the different conditions.
-ggplot(data = dat_excluded2, aes(x = RELWDINDEX, y = WORD_TIME, col = ITEM_TYPE)) +
+ggplot(data = dat_excluded, aes(x = RELWDINDEX, y = WORD_TIME, col = ITEM_TYPE)) +
   geom_point(alpha = 0.8, shape = 16) +
   ggtitle('Scatter Plot of Reading time(ms) and Word Index between GG and GB groups')
 
@@ -180,10 +194,10 @@ print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
 
 #    Your task is to figure out how to adapt this plot for our data. What do you 
 #    conclude regarding the reading sentences experiment?
-summary(dat_excluded2)
+summary(dat_excluded)
 ?xyplot
 # melting and recasting for average word_time
-mdat_e <- melt(dat_excluded2, id.vars = c("PARTICIPANT", "RELWDINDEX", "ITEM_TYPE"),
+mdat_e <- melt(dat_excluded, id.vars = c("PARTICIPANT", "RELWDINDEX", "ITEM_TYPE"),
              measure.vars = c("WORD_TIME"))
 cdat_e <- dcast(mdat_e,RELWDINDEX + PARTICIPANT + ITEM_TYPE ~ variable, mean, na.rm = T)
 
@@ -209,21 +223,21 @@ dat_model = lmer(WORD_TIME ~ RELWDINDEX + ITEM_TYPE + (1 + RELWDINDEX | PARTICIP
 dat_model_null = lmer(WORD_TIME ~ RELWDINDEX + (1 + RELWDINDEX | PARTICIPANT), cdat_e, REML=FALSE)
 summary(dat_model)
 
-# The average WORD_TIME in the GB group is approximately 621.2 ms (fixed effects intercept) and 
-# the GG group WORD_TIME is around 17 ms longer. For each unit increase in RELWDINDEX, the estimated WORD_TIME
-# also increases by 3 ms.
-# The std. Dev of 142 in the participant random effects suggest that there's quite a large variability among
-# participants in terms of WORD_TIME.
+# The average WORD_TIME in the GB group is approximately 633.619 ms (fixed effects intercept) and 
+# the GG group WORD_TIME is around 27.9ms longer. For each unit increase in RELWDINDEX, the estimated WORD_TIME
+# also increases by 7.020 ms.
+# The std. Dev of 142.2 in the participant random effects suggest that there's quite a large variability among
+# participants in terms of WROD_TIME.
 
 coef(dat_model)
 # The slopes for the RELWDINDEX that change from positive to negative in different participants suggest that
 # the relationship between WORD_TIME and RELWDINDEX is different across test participants and that the effect
-# is not consistant. In 7 participants, WORD_TIME decreases as RELWDINDEX increases; in others, the relationship
+# is not consistant. In 5 participants, WORD_TIME decreases as RELWDINDEX increases; in others, the relationship
 # is reversed. 
 
 anova(dat_model_null, dat_model)
-# Based on the Chi-sqaured statistic of 4.5381 and p-value of 0.1125, the effect of ITEM_TYPE on WORD_TIME
-# is not statistically significant.
+# Based on the Chi-sqaured statistic of 4.5381 and p-value of 0.03315, the effect of ITEM_TYPE on WORD_TIME
+# is statistically significant; WORD_TIME increased by 27.9 ms +- 14.692 in ITEM_TYPE GG group.
 
 # g) Let's get back to the dataset 'sleepstudy'. The following plot shows 
 #    subject-specific intercepts and slopes. Adapt this plot for our study 
