@@ -215,32 +215,35 @@ print(xyplot(WORD_TIME ~ RELWDINDEX | PARTICIPANT, cdat_e, aspect = 'fill',
 # Reading time tends to increase after the critical word (i.e. word at index 0), more so for the GB group than
 # the GG group.
 
-# plotting without recasting
-# I don't think the plot below is correct; so ignore.
-# adding column for average word_time grouped by item_type
-library(dplyr)
-dat_excluded <- dat_excluded %>% 
-  group_by(ITEM_TYPE) %>%
-  mutate(AVG_WORD_TIME = mean(WORD_TIME))
-
-print(xyplot(AVG_WORD_TIME ~ RELWDINDEX | PARTICIPANT, dat_excluded, aspect = 'xy',
-             groups = ITEM_TYPE,
-             layout = c(6,4), type = c('g', 'p', 'r'), 
-             index.cond = function(x,y) coef(lm(y ~ x))[1],
-             xlab = 'Index Word as the Sentence Progresses',
-             ylab = 'Average Reading Time (ms)'))
-
 # f) Experiment with calculating a linear mixed effects model for this study, 
 #    and draw the appropriate conclusions (give a detailed explanation 
 #    for each model).
 
-dat_model = lmer(WORD_TIME ~ RELWDINDEX + ITEM_TYPE + (RELWDINDEX | PARTICIPANT), cdat_e)
+dat_model = lmer(WORD_TIME ~ RELWDINDEX + ITEM_TYPE + (1 + RELWDINDEX | PARTICIPANT), cdat_e, REML=FALSE)
+dat_model_null = lmer(WORD_TIME ~ RELWDINDEX + (1 + RELWDINDEX | PARTICIPANT), cdat_e, REML=FALSE)
 summary(dat_model)
+
+# The average WORD_TIME in the GB group is approximately 633.619 ms (firxed effects intercept) and 
+# the GG group WORD_TIME is around 27.9ms longer. For each unit increase in RELWDINDEX, the estimated WORD_TIME
+# also increases by 7.020 ms.
+# The std. Dev of 142.2 in the participant random effects suggest that there's quite a large variability among
+# participants in terms of WROD_TIME.
+
+coef(dat_model)
+# The slopes for the RELWDINDEX that change from postivie to negative in different participants suggest that
+# the relationship between WORD_TIME and RELWDINDEX is different across test participants and that the effect
+# is not consistant. In 5 participants, WORD_TIME decreases as RELWDINDEX increases; in others, the relationship
+# is reversed. 
+
+anova(dat_model_null, dat_model)
+# Based on the Chi-sqaured statistic of 3.5381 and p-value of 0.03315, the effect of ITEM_TYPE on WORD_TIME
+# is statistically significant; WORD_TIME increased by 27.9 ms +- 14.692 in ITEM_TYPE GG group.
 
 # g) Let's get back to the dataset 'sleepstudy'. The following plot shows 
 #    subject-specific intercepts and slopes. Adapt this plot for our study 
 #    and draw conclusions.
 print(dotplot(ranef(dat_model, condVar=TRUE), scales = list(x = list(relation = 'free')))[["PARTICIPANT"]])
+# Based on the plot, it appears that there is variability in slopes between participants.
 
 model = lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
 print(dotplot(ranef(model,condVar=TRUE),  scales = list(x = list(relation = 'free')))
