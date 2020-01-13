@@ -33,7 +33,7 @@ library(Matrix)
 #   Read in the data file of your choice (gender.Rdata, sem.Rdata OR relclause.Rdata) 
 #   and assign it to a variable called "dat". 
 #   See a description of the items in the datasets below.
-dat <- read.delim('gender.txt', sep = ' ')
+dat <- read.delim('gender.txt', fileEncoding="UTF-8", sep = ' ')
 summary(dat)
 head(dat)
 # The files contain data from an experiment where people were reading sentences, 
@@ -223,20 +223,20 @@ dat_model = lmer(WORD_TIME ~ RELWDINDEX + ITEM_TYPE + (1 + RELWDINDEX | PARTICIP
 dat_model_null = lmer(WORD_TIME ~ RELWDINDEX + (1 + RELWDINDEX | PARTICIPANT), cdat_e, REML=FALSE)
 summary(dat_model)
 
-# The average WORD_TIME in the GB group is approximately 633.619 ms (firxed effects intercept) and 
+# The average WORD_TIME in the GB group is approximately 633.619 ms (fixed effects intercept) and 
 # the GG group WORD_TIME is around 27.9ms longer. For each unit increase in RELWDINDEX, the estimated WORD_TIME
 # also increases by 7.020 ms.
 # The std. Dev of 142.2 in the participant random effects suggest that there's quite a large variability among
 # participants in terms of WROD_TIME.
 
 coef(dat_model)
-# The slopes for the RELWDINDEX that change from postivie to negative in different participants suggest that
+# The slopes for the RELWDINDEX that change from positive to negative in different participants suggest that
 # the relationship between WORD_TIME and RELWDINDEX is different across test participants and that the effect
 # is not consistant. In 5 participants, WORD_TIME decreases as RELWDINDEX increases; in others, the relationship
 # is reversed. 
 
 anova(dat_model_null, dat_model)
-# Based on the Chi-sqaured statistic of 3.5381 and p-value of 0.03315, the effect of ITEM_TYPE on WORD_TIME
+# Based on the Chi-sqaured statistic of 4.5381 and p-value of 0.03315, the effect of ITEM_TYPE on WORD_TIME
 # is statistically significant; WORD_TIME increased by 27.9 ms +- 14.692 in ITEM_TYPE GG group.
 
 # g) Let's get back to the dataset 'sleepstudy'. The following plot shows 
