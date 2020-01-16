@@ -33,7 +33,9 @@ library(Matrix)
 #   Read in the data file of your choice (gender.Rdata, sem.Rdata OR relclause.Rdata) 
 #   and assign it to a variable called "dat". 
 #   See a description of the items in the datasets below.
-
+dat <- read.delim('gender.txt', fileEncoding="UTF-8", sep = ' ')
+summary(dat)
+head(dat)
 # The files contain data from an experiment where people were reading sentences, 
 # and pressed the space bar to see the next word. The duration for which a word was 
 # viewed before pressing the space bar again is the reading time of the word, and is 
@@ -103,17 +105,80 @@ library(Matrix)
 #    and ITEM_TYPE. 
 #    For the second plot you should first subset the data using only RELWDINDEX == 0 and
 #    then plot the WORD_TIME for the different conditions (ITEM_TYPE).
+library(ggplot2)
+library(reshape2)
+
+# plot of average by item_type per participant
+mdat <- melt(dat, id.vars = c("PARTICIPANT", "ITEM_TYPE"),
+             measure.vars = c("WORD_TIME"))
+cdat <- dcast(mdat, ITEM_TYPE + PARTICIPANT ~ variable, mean, na.rm = T)
+ggplot(cdat, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) + 
+  geom_boxplot() +
+  ggtitle('Plot of average WORD_TIME per PARTICIPANT by ITEM_TYPE')
+
+# first plot for relationship between WORD_TIME and ITEM_TYPE
+theme_update(plot.title = element_text(hjust = 0.5))
+ggplot(data = dat, aes(WORD_TIME, color = ITEM_TYPE, fill=ITEM_TYPE)) +
+  ggtitle('Plot of WORD_TIME Distribution by ITEM_TYPE') +
+  geom_density(alpha = 0.6) + 
+  facet_wrap(~ITEM_TYPE)
+
+ggplot(dat, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) + 
+  geom_boxplot() +
+  ggtitle('Boxplot of WORD_TIME by ITEM_TYPE')
+
+# second plot for RELWDINDEX == 0
+dat2 <- subset(dat, RELWDINDEX == 0)
+ggplot(dat2, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) + 
+  geom_boxplot() +
+  ggtitle('Boxplot of WORD_TIME by ITEM_TYPE at Critical Word Index')
 
 # c) Decide whether you want to exclude any data points (provide not only the code,
 #    but also a detailed (!) explanation). 
 #    Note that we are evaluating WORD_TIME as our reponse variable. 
 #    What time intervals make sense for such an experiment?
 
+# Considering the length of the sample sentences described, I'm assuming that WORD_TIME unit is in milliseconds
+# as 1000-6000 ms (1-6 seconds) seems reasonable for proficient speakers to read these sentences.
+# From our density plot and the summary of the data, ~90% of the WORD_TIME distribution lie below 3000 ms.
+# Almost all of the data points for WORD_TIME at RELWDINDEX == 0 are also under 3000ms as observed in our boxplot.
+# Considering that it is reasonable to expect readers to take more time to read 'grammatically bad' sentences
+# excluding the outlier data points > 3000 ms, which are mostly in the 'grammatically good' category, seems
+# reasonable. The boxplot of the average WORD_TIME per PARTICIPANT by ITEM_TYPE supports this rationale as well.
+# As observed, in contrast to the Boxplot of WORD_TIME by ITEM_TYPE at Critical Word Index, which shows the 'GB'
+# group to have overall longer WORD_TIME, the average WORD_TIME in the per PARTICIPANT bloxplot is higher in 
+# the 'GG' group than 'GB' group.
+
+dat_excluded <- subset(dat, WORD_TIME <= 3000)
+
+# checking that doing so preserves existing distribution
+ggplot(dat_excluded, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) + 
+  geom_boxplot() +
+  ggtitle('Boxplot of WORD_TIME by ITEM_TYPE')
+
+ggplot(data = dat_excluded, aes(WORD_TIME, color = ITEM_TYPE, fill=ITEM_TYPE)) +
+  ggtitle('Plot of WORD_TIME Distribution by ITEM_TYPE') +
+  geom_density(alpha = 0.6) + 
+  facet_wrap(~ITEM_TYPE)
+
+# Another thought I had was to cut down to < 2000, but I don't have a more compelling justification
+# than that 90% of the datapoints fall under this threshold from the density plot :/ Thoughts?
+dat_excluded2 <- subset(dat, WORD_TIME <= 2000)
+ggplot(dat_excluded2, aes(ITEM_TYPE, WORD_TIME, group = ITEM_TYPE)) + 
+  geom_boxplot() +
+  ggtitle('Boxplot of WORD_TIME by ITEM_TYPE')
+
+ggplot(data = dat_excluded2, aes(WORD_TIME, color = ITEM_TYPE, fill=ITEM_TYPE)) +
+  ggtitle('Plot of WORD_TIME Distribution by ITEM_TYPE') +
+  geom_density(alpha = 0.6) + 
+  facet_wrap(~ITEM_TYPE)
 
 # d) Make a scatter plot where for each index word as the sentence progresses (RELWDINDEX),
 #    the average reading time is shown for each of the two conditions (ITEM_TYPE).
 #    Please use two different colours for the different conditions.
-
+ggplot(data = dat_excluded, aes(x = RELWDINDEX, y = WORD_TIME, col = ITEM_TYPE)) +
+  geom_point(alpha = 0.8, shape = 16) +
+  ggtitle('Scatter Plot of Reading time(ms) and Word Index between GG and GB groups')
 
 # e) You do not need to use ggplot here, just follow the example below.
 #    The code is a plot for the dataset 'sleepstudy' from the package 'lme4'.
@@ -129,17 +194,56 @@ print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
 
 #    Your task is to figure out how to adapt this plot for our data. What do you 
 #    conclude regarding the reading sentences experiment?
+summary(dat_excluded)
+?xyplot
+# melting and recasting for average word_time
+mdat_e <- melt(dat_excluded, id.vars = c("PARTICIPANT", "RELWDINDEX", "ITEM_TYPE"),
+             measure.vars = c("WORD_TIME"))
+cdat_e <- dcast(mdat_e,RELWDINDEX + PARTICIPANT + ITEM_TYPE ~ variable, mean, na.rm = T)
 
+print(xyplot(WORD_TIME ~ RELWDINDEX | PARTICIPANT, cdat_e, aspect = 'fill',
+             main = 'Relationship between ART and Critical Word',
+             groups = ITEM_TYPE, auto.key = list(space = 'right'),
+             par.settings = list(superpose.symbol = list(col = c("blue", "orange")), 
+                                 superpose.line = list(col = c("blue", "orange"))),
+             layout = c(8,3), type = c('g', 'p', 'r'), 
+             index.cond = function(x,y) coef(lm(y ~ x))[1],
+             xlab = 'Index Word as the Sentence Progresses',
+             ylab = 'ART (ms) by Sentence Type: GG vs GB'))
 
+# Observation from the plot:
+# Reading time tends to increase after the critical word (i.e. word at index 0), more so for the GB group than
+# the GG group. However, the general tendency is not so clear (as it is the case for the sleep study example)
 
 # f) Experiment with calculating a linear mixed effects model for this study, 
 #    and draw the appropriate conclusions (give a detailed explanation 
 #    for each model).
 
+dat_model = lmer(WORD_TIME ~ RELWDINDEX + ITEM_TYPE + (1 + RELWDINDEX | PARTICIPANT), cdat_e, REML=FALSE)
+dat_model_null = lmer(WORD_TIME ~ RELWDINDEX + (1 + RELWDINDEX | PARTICIPANT), cdat_e, REML=FALSE)
+summary(dat_model)
+
+# The average WORD_TIME in the GB group is approximately 633.619 ms (fixed effects intercept) and 
+# the GG group WORD_TIME is around 27.9ms longer. For each unit increase in RELWDINDEX, the estimated WORD_TIME
+# also increases by 7.020 ms.
+# The std. Dev of 142.2 in the participant random effects suggest that there's quite a large variability among
+# participants in terms of WROD_TIME.
+
+coef(dat_model)
+# The slopes for the RELWDINDEX that change from positive to negative in different participants suggest that
+# the relationship between WORD_TIME and RELWDINDEX is different across test participants and that the effect
+# is not consistant. In 5 participants, WORD_TIME decreases as RELWDINDEX increases; in others, the relationship
+# is reversed. 
+
+anova(dat_model_null, dat_model)
+# Based on the Chi-sqaured statistic of 4.5381 and p-value of 0.03315, the effect of ITEM_TYPE on WORD_TIME
+# is statistically significant; WORD_TIME increased by 27.9 ms +- 14.692 in ITEM_TYPE GG group.
 
 # g) Let's get back to the dataset 'sleepstudy'. The following plot shows 
 #    subject-specific intercepts and slopes. Adapt this plot for our study 
 #    and draw conclusions.
+print(dotplot(ranef(dat_model, condVar=TRUE), scales = list(x = list(relation = 'free')))[["PARTICIPANT"]])
+# Based on the plot, it appears that there is variability in slopes between participants.
 
 model = lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
 print(dotplot(ranef(model,condVar=TRUE),  scales = list(x = list(relation = 'free')))
