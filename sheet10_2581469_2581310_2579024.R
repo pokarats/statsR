@@ -121,7 +121,8 @@ summary(model_mixed_3)
 
 # In both models, the fun variable still has the highest slope. When considering the intercepts and slopes together
 # the only variables that are signficant are attraction, fun, and ambition, although ambition has a negative
-# correlation with match.
+# correlation with match. When considered separately, intelligence is also considered to be a significant variable
+# affecting match.
 
 ####
 #Part 2
