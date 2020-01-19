@@ -19,7 +19,9 @@
 ## (exercise0N_firstID_secondID_thirdID.R)
 
 ######################################################################################################################
-
+library(lme4)
+library(lattice)
+library(Matrix)
 
 ####
 #Part 1
@@ -35,11 +37,13 @@
 
 
 
+
 #(1) Fit a classical logistic regression predicting Pr(yij = 1) given person i's 
 #    ratings of person j. For ratings, use the features attr, sinc, intel, fun; see the documentation for what exactly these
 #    abbreviations stand for.
 #    Also, please plot the data in order to inspect it, and discuss the importance of attractiveness, compatibility, and so 
 #    forth in this predictive model.
+dat = read.csv('SpeedDatingData.csv')
 
 
 #(2) Expand this model to allow varying intercepts for the persons making the
@@ -77,11 +81,32 @@ p <- within(p, {
 summary(p)
 
 #(6) Plot the data to see whether program type and math final exam score seem to affect the number of awards.
-
+library(ggplot2)
+plot <- ggplot(p, aes(x = math, y = num_awards, color = prog)) + geom_point()
+plot + geom_smooth(method = 'glm', se = FALSE)
 #(7) Run a generalized linear model to test for significance of effects.
+mod <- glm(num_awards ~ math + prog, data = p, family = 'poisson')
+summary(mod)
 
+mod_mixed <- glmer(num_awards ~ math*prog + (1 + math||id), data = p, family = 'poisson')
+summary(mod_mixed)
 #(8) Do model comparisons do find out whether the predictors significantly improve model fit.
 
+# not sure what the question is asking here; are we to try different models with different predictor variables
+# and compare which one has lower AIC?
+mod_null <- glm(num_awards ~ math, data = p, family = 'poisson')
+summary(mod_null)
+
+mod_inter <- glm(num_awards ~ math * prog, data = p, family = 'poisson')
+summary(mod_inter)
+
+AIC(mod, mod_null, mod_inter, mod_mixed)
+
+# It appears that the math score predictor variable improves the model fit as it has the lowest AIC score among
+# all the models.
+
 #(9) Compare to a model that uses a gaussian distribution (normal lm model) for this data.
-
-
+mod_gaussian <-glm(num_awards ~ math + prog, data = p, family = 'gaussian')
+summary(mod_gaussian)
+AIC(mod, mod_gaussian)
+# clearly the non-gaussian model has a signficantly better fit
