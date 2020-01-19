@@ -22,6 +22,8 @@
 library(lme4)
 library(lattice)
 library(Matrix)
+library(ggplot2)
+library(reshape2)
 
 ####
 #Part 1
@@ -44,14 +46,60 @@ library(Matrix)
 #    Also, please plot the data in order to inspect it, and discuss the importance of attractiveness, compatibility, and so 
 #    forth in this predictive model.
 dat = read.csv('SpeedDatingData.csv')
-
+head(dat)
 
 #(2) Expand this model to allow varying intercepts for the persons making the
 #    evaluation; that is, some people are more likely than others to want to meet
 #    someone again. Discuss the fitted model.
+model <- glm(match ~ attr + sinc + intel + fun, family = binomial, data = dat)
+summary(model)
+
+# attraction
+mdat <- melt(dat, id.vars = c("attr"),
+             measure.vars = c("match"))
+cdat <- dcast(mdat, attr ~ variable, mean, na.rm = T)
+ggplot(cdat, aes(attr, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+
+# sincerity
+mdat_s <- melt(dat, id.vars = c("sinc"),
+             measure.vars = c("match"))
+cdat_s <- dcast(mdat_s, sinc ~ variable, mean, na.rm = T)
+ggplot(cdat_s, aes(sinc, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+
+# intelligence
+mdat_i <- melt(dat, id.vars = c("intel"),
+               measure.vars = c("match"))
+cdat_i <- dcast(mdat_i, intel ~ variable, mean, na.rm = T)
+ggplot(cdat_i, aes(intel, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+
+# fun
+mdat_f <- melt(dat, id.vars = c("fun"),
+               measure.vars = c("match"))
+cdat_f <- dcast(mdat_f, fun ~ variable, mean, na.rm = T)
+ggplot(cdat_f, aes(fun, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+
+# According to the linear model, only attractiveness and fun predictor variables are deemed to be significiant.
+# Between these two variables, the slope of the fun variable is slightly higher than the attractiveness variable.
+# This suggests that, all else being equal, an increase in fun rating by 1 point increases the expected likelihood
+# for a match by 0.317 while an increase in attractiveness by 1 point increases the likelihood of a match by 
+# 0.246.
 
 #(3) Expand further to allow varying intercepts for the persons being rated. Discuss
 #    the fitted model.
+
+model_mixed <- glmer(match ~ attr + sinc + intel + fun + (1|id) + (1|iid), 
+                   family = 'binomial', data = dat)
+summary(model_mixed)
+
+# In the general mixed effect model, intelligence is also considered a significant factor affecting
+# match in addition to attraction and fun. The slopes of these variables also change slightly, but the fun
+# variable still has the highest slope, followed by attraction. For intelligence, an increase in intelligence
+# rating by 1 point increases the likelihood of a match by 0.1.
+
+# As noted in the random effects, there is not as much variation among different participants as there is across
+# the Waves i.e. the date events.
+
+# The AIC for this model of 6078.8 is lower than that of the non-mixed effect model (6405.7)
 
 #(4) Now fit some models that allow the coefficients for attractiveness, compatibility, and the 
 #    other attributes to vary by person.  Fit a multilevel model, allowing the intercept and the 
@@ -102,11 +150,14 @@ summary(mod_inter)
 
 AIC(mod, mod_null, mod_inter, mod_mixed)
 
-# It appears that the math score predictor variable improves the model fit as it has the lowest AIC score among
-# all the models.
+
+# It appears that the type of program predictor variable improves the model fit as it has the lowest AIC score among
+# all the models. However, the difference in AIC scores among all the 4 models are < 10, which does not seem to
+# be a huge difference.
 
 #(9) Compare to a model that uses a gaussian distribution (normal lm model) for this data.
 mod_gaussian <-glm(num_awards ~ math + prog, data = p, family = 'gaussian')
 summary(mod_gaussian)
 AIC(mod, mod_gaussian)
-# clearly the non-gaussian model has a signficantly better fit
+# clearly the non-gaussian model has a signficantly better fit as the AIC score is almost 200 points lower than
+# the guassian model.
