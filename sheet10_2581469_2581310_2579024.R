@@ -107,9 +107,21 @@ summary(model_mixed)
 #    include many predictors as random slopes; see with how many predictors you can get the model to converge;
 #    and try out some of the tricks we have seen to see whether they affect convergence for this dataset.)
 
+# treating intercepts and slopes separately by random factor; converged
+model_mixed_2 <- glmer(match ~ attr + sinc + intel + fun + amb + (attr||id) + (fun||id) + (intel||id) + (amb||id), 
+                       family = 'binomial', data = dat)
+summary(model_mixed_2)
+
+# treating intercepts and slopes together by random factor; does not converge
+model_mixed_3 <- glmer(match ~ attr + sinc + intel + fun + amb + (1 + attr|id) + (1 + fun|id) + (1 + intel|id) + 
+                         (1 + amb|id), family = 'binomial', data = dat)
+summary(model_mixed_3)
 
 #(5) compare the output for the different models that you calculated - did the model design affect your conclusions?
 
+# In both models, the fun variable still has the highest slope. When considering the intercepts and slopes together
+# the only variables that are signficant are attraction, fun, and ambition, although ambition has a negative
+# correlation with match.
 
 ####
 #Part 2
