@@ -51,55 +51,56 @@ head(dat)
 #(2) Expand this model to allow varying intercepts for the persons making the
 #    evaluation; that is, some people are more likely than others to want to meet
 #    someone again. Discuss the fitted model.
-model <- glm(match ~ attr + sinc + intel + fun, family = binomial, data = dat)
+model <- glm(dec ~ attr + sinc + intel + fun, family = binomial, data = dat)
 summary(model)
 
 # attraction
 mdat <- melt(dat, id.vars = c("attr"),
-             measure.vars = c("match"))
+             measure.vars = c("dec"))
 cdat <- dcast(mdat, attr ~ variable, mean, na.rm = T)
-ggplot(cdat, aes(attr, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+ggplot(cdat, aes(attr, dec)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
 
 # sincerity
 mdat_s <- melt(dat, id.vars = c("sinc"),
-             measure.vars = c("match"))
+             measure.vars = c("dec"))
 cdat_s <- dcast(mdat_s, sinc ~ variable, mean, na.rm = T)
-ggplot(cdat_s, aes(sinc, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+ggplot(cdat_s, aes(sinc, dec)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
 
 # intelligence
 mdat_i <- melt(dat, id.vars = c("intel"),
-               measure.vars = c("match"))
+               measure.vars = c("dec"))
 cdat_i <- dcast(mdat_i, intel ~ variable, mean, na.rm = T)
-ggplot(cdat_i, aes(intel, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+ggplot(cdat_i, aes(intel, dec)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
 
 # fun
 mdat_f <- melt(dat, id.vars = c("fun"),
-               measure.vars = c("match"))
+               measure.vars = c("dec"))
 cdat_f <- dcast(mdat_f, fun ~ variable, mean, na.rm = T)
-ggplot(cdat_f, aes(fun, match)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
+ggplot(cdat_f, aes(fun, dec)) + geom_point() + geom_smooth(method = 'glm', se = FALSE)
 
-# According to the linear model, only attractiveness and fun predictor variables are deemed to be significiant.
-# Between these two variables, the slope of the fun variable is slightly higher than the attractiveness variable.
-# This suggests that, all else being equal, an increase in fun rating by 1 point increases the expected likelihood
-# for a match by 0.317 while an increase in attractiveness by 1 point increases the likelihood of a match by 
-# 0.246.
+# According to the linear model, only attractiveness, sincerity, and fun predictor variables are deemed to be 
+# significiant. Only attraction and fun are positively correlated with the decision for a follow-up date. Sincerity,
+# on the contrary, is negatively correlated with the decision response variable.
+# This suggests that, all else being equal, an increase in attraction rating by 1 point increases the expected 
+# chance of a decision to follow-up date by 0.5623 unit points while an increase in fun by 1 point increases the 
+# likelihood of a decision to date by 0.33711.
 
 #(3) Expand further to allow varying intercepts for the persons being rated. Discuss
 #    the fitted model.
 
-model_mixed <- glmer(match ~ attr + sinc + intel + fun + (1|id) + (1|iid), 
+model_mixed <- glmer(dec ~ attr + sinc + intel + fun + (1|id) + (1|iid), 
                    family = 'binomial', data = dat)
 summary(model_mixed)
 
-# In the general mixed effect model, intelligence is also considered a significant factor affecting
-# match in addition to attraction and fun. The slopes of these variables also change slightly, but the fun
-# variable still has the highest slope, followed by attraction. For intelligence, an increase in intelligence
-# rating by 1 point increases the likelihood of a match by 0.1.
+# In the general mixed effect model, all predictors are considered significant factors affecting
+# decision to follow-up date. The slopes of these variables change quite a bit, but the attraction variable
+# still has the highest slope (0.9), followed by fun (0.6). For intelligence and sincerity an increase in 
+# intelligence and sincerity rating by 1 point increases the decision-to-date by 0.17 and 0.1 units respectively.
 
-# As noted in the random effects, there is not as much variation among different participants as there is across
-# the Waves i.e. the date events.
+# As noted in the random effects, there is not as much variation among different participants (id) as there is across
+# the Waves i.e. the date events (iid).
 
-# The AIC for this model of 6078.8 is lower than that of the non-mixed effect model (6405.7)
+# The AIC for this model of 6700 is lower than that of the non-mixed effect model (8328).
 
 #(4) Now fit some models that allow the coefficients for attractiveness, compatibility, and the 
 #    other attributes to vary by person.  Fit a multilevel model, allowing the intercept and the 
@@ -108,21 +109,20 @@ summary(model_mixed)
 #    and try out some of the tricks we have seen to see whether they affect convergence for this dataset.)
 
 # treating intercepts and slopes separately by random factor; converged
-model_mixed_2 <- glmer(match ~ attr + sinc + intel + fun + amb + (attr||id) + (fun||id) + (intel||id) + (amb||id), 
+model_mixed_2 <- glmer(dec ~ attr + sinc + intel + fun + amb + (attr||id) + (fun||id) + (intel||id) + (amb||id), 
                        family = 'binomial', data = dat)
 summary(model_mixed_2)
 
 # treating intercepts and slopes together by random factor; does not converge
-model_mixed_3 <- glmer(match ~ attr + sinc + intel + fun + amb + (1 + attr|id) + (1 + fun|id) + (1 + intel|id) + 
+model_mixed_3 <- glmer(dec ~ attr + sinc + intel + fun + amb + (1 + attr|id) + (1 + fun|id) + (1 + intel|id) + 
                          (1 + amb|id), family = 'binomial', data = dat)
 summary(model_mixed_3)
 
 #(5) compare the output for the different models that you calculated - did the model design affect your conclusions?
 
-# In both models, the fun variable still has the highest slope. When considering the intercepts and slopes together
-# the only variables that are signficant are attraction, fun, and ambition, although ambition has a negative
-# correlation with match. When considered separately, intelligence is also considered to be a significant variable
-# affecting match.
+# In both models, the attraction variable still has the highest slope. When considering the intercepts and slopes together
+# the only variables that are signficant are attraction, fun, sincerity, and ambition, although ambition and sincerity 
+# are negatively correlated with decision. 
 
 ####
 #Part 2
