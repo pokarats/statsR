@@ -48,9 +48,6 @@ library(reshape2)
 dat = read.csv('SpeedDatingData.csv')
 head(dat)
 
-#(2) Expand this model to allow varying intercepts for the persons making the
-#    evaluation; that is, some people are more likely than others to want to meet
-#    someone again. Discuss the fitted model.
 model <- glm(dec ~ attr + sinc + intel + fun, family = binomial, data = dat)
 summary(model)
 
@@ -85,9 +82,15 @@ ggplot(cdat_f, aes(fun, dec)) + geom_point() + geom_smooth(method = 'glm', se = 
 # chance of a decision to follow-up date by 0.5623 unit points while an increase in fun by 1 point increases the 
 # likelihood of a decision to date by 0.33711.
 
-#(3) Expand further to allow varying intercepts for the persons being rated. Discuss
-#    the fitted model.
+#(2) Expand this model to allow varying intercepts for the persons making the
+#    evaluation; that is, some people are more likely than others to want to meet
+#    someone again. Discuss the fitted model.
 
+# Does not converge
+model_mixed <- glmer(dec ~ attr + sinc + intel + fun + (1|iid), 
+                     family = 'binomial', data = dat)
+
+# Converges
 model_mixed <- glmer(dec ~ attr + sinc + intel + fun + (1|id) + (1|iid), 
                    family = 'binomial', data = dat)
 summary(model_mixed)
@@ -97,10 +100,20 @@ summary(model_mixed)
 # still has the highest slope (0.9), followed by fun (0.6). For intelligence and sincerity an increase in 
 # intelligence and sincerity rating by 1 point increases the decision-to-date by 0.17 and 0.1 units respectively.
 
-# As noted in the random effects, there is not as much variation among different participants (id) as there is across
-# the Waves i.e. the date events (iid).
+# Curiously, the model doesn't converge with id (which should be redundant knowing iid) not included.
 
 # The AIC for this model of 6700 is lower than that of the non-mixed effect model (8328).
+
+#(3) Expand further to allow varying intercepts for the persons being rated. Discuss
+#    the fitted model.
+
+model_3 <- glmer(dec ~ attr + sinc + intel + fun + (1|id) + (1|iid) + (1|pid), 
+                     family = 'binomial', data = dat)
+summary(model_3)
+
+# There is an effect of pid, but only a small one (0.27).
+
+# The AIC for this model of 6665 is again lower, but not as much.
 
 #(4) Now fit some models that allow the coefficients for attractiveness, compatibility, and the 
 #    other attributes to vary by person.  Fit a multilevel model, allowing the intercept and the 
@@ -108,8 +121,8 @@ summary(model_mixed)
 #    include many predictors as random slopes; see with how many predictors you can get the model to converge;
 #    and try out some of the tricks we have seen to see whether they affect convergence for this dataset.)
 
-# treating intercepts and slopes separately by random factor; converged
-model_mixed_2 <- glmer(dec ~ attr + sinc + intel + fun + amb + (attr||id) + (fun||id) + (intel||id) + (amb||id), 
+# treating intercepts and slopes separately by random factor; converged?
+model_mixed_2 <- glmer(dec ~ attr + sinc + intel + fun + amb + (attr||iid) + (fun||iid) + (intel||iid) + (amb||iid), 
                        family = 'binomial', data = dat)
 summary(model_mixed_2)
 
@@ -135,42 +148,40 @@ summary(model_mixed_3)
 # Let's start with loading the data and looking at some descriptive statistics.
 
 p = read.csv("poisson_sim.csv", sep=";")
-p <- within(p, {
-  prog <- factor(prog, levels=1:3, labels=c("General", "Academic", "Vocational"))
-  id <- factor(id)
-})
 summary(p)
 
 #(6) Plot the data to see whether program type and math final exam score seem to affect the number of awards.
+
 library(ggplot2)
 plot <- ggplot(p, aes(x = math, y = num_awards, color = prog)) + geom_point()
 plot + geom_smooth(method = 'glm', se = FALSE)
+
 #(7) Run a generalized linear model to test for significance of effects.
+
 mod <- glm(num_awards ~ math + prog, data = p, family = 'poisson')
 summary(mod)
 
-mod_mixed <- glmer(num_awards ~ math*prog + (1 + math||id), data = p, family = 'poisson')
-summary(mod_mixed)
 #(8) Do model comparisons do find out whether the predictors significantly improve model fit.
 
-# not sure what the question is asking here; are we to try different models with different predictor variables
-# and compare which one has lower AIC?
 mod_null <- glm(num_awards ~ math, data = p, family = 'poisson')
 summary(mod_null)
 
 mod_inter <- glm(num_awards ~ math * prog, data = p, family = 'poisson')
 summary(mod_inter)
 
-AIC(mod, mod_null, mod_inter, mod_mixed)
+mod_mixed <- glmer(num_awards ~ math*prog + (1 + math||ï..id), data = p, family = 'poisson')
+summary(mod_mixed)
 
+AIC(mod, mod_null, mod_inter, mod_mixed)
 
 # It appears that the type of program predictor variable improves the model fit as it has the lowest AIC score among
 # all the models. However, the difference in AIC scores among all the 4 models are < 10, which does not seem to
 # be a huge difference.
 
 #(9) Compare to a model that uses a gaussian distribution (normal lm model) for this data.
-mod_gaussian <-glm(num_awards ~ math + prog, data = p, family = 'gaussian')
+
+mod_gaussian <- glm(num_awards ~ math + prog, data = p, family = 'gaussian')
 summary(mod_gaussian)
 AIC(mod, mod_gaussian)
 # clearly the non-gaussian model has a signficantly better fit as the AIC score is almost 200 points lower than
-# the guassian model.
+# the gaussian model.
