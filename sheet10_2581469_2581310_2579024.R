@@ -121,10 +121,18 @@ summary(model_3)
 #    include many predictors as random slopes; see with how many predictors you can get the model to converge;
 #    and try out some of the tricks we have seen to see whether they affect convergence for this dataset.)
 
-# treating intercepts and slopes separately by random factor; converged?
+# treating intercepts and slopes separately by random factor; does not converge
 model_mixed_2 <- glmer(dec ~ attr + sinc + intel + fun + amb + (attr||iid) + (fun||iid) + (intel||iid) + (amb||iid), 
                        family = 'binomial', data = dat)
 summary(model_mixed_2)
+
+# considering only attraction as a fixed effect; converged
+model_mixed_5 <- glmer(dec ~ attr + (attr||id) + (fun||id), family = 'binomial', data = dat)
+summary(model_mixed_5)
+
+# considering attraction and fun as fixed effects; converged
+model_mixed_4 <- glmer(dec ~ attr + fun + (attr||id) + (attr||iid), family = 'binomial', data = dat)
+summary(model_mixed_4)
 
 # treating intercepts and slopes together by random factor; does not converge
 model_mixed_3 <- glmer(dec ~ attr + sinc + intel + fun + amb + (1 + attr|id) + (1 + fun|id) + (1 + intel|id) + 
@@ -133,9 +141,17 @@ summary(model_mixed_3)
 
 #(5) compare the output for the different models that you calculated - did the model design affect your conclusions?
 
-# In both models, the attraction variable still has the highest slope. When considering the intercepts and slopes together
-# the only variables that are signficant are attraction, fun, sincerity, and ambition, although ambition and sincerity 
+# In the above models, the attraction variable still has the highest slope. When considering the intercepts and slopes together
+# in model_mixed_3, the only variables that are signficant are attraction, fun, sincerity, and ambition, although ambition and sincerity 
 # are negatively correlated with decision. 
+# However, the models that did not converge (mixed_2 - mixed_3) both had higher AIC scores (7894 and 7849) than 
+# the classical model in the previous section.
+
+# When considering only attractio and fun as predictor variables and participant and Wave as random effects,
+# we were able to get the model to converge in model_mixed_4. This model's AIC is 6831, still not as good
+# as the classical model in the previous section. According to this model, for each unit increase in
+# attraction rating, the expected likelihood of a decision to follow-up date increases by 0.92150 units. For each
+# unit increase in fun rating, the expected likelihood of a decision to follow-up date increases by 0.6266 units.
 
 ####
 #Part 2
