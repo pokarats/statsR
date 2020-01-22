@@ -51,6 +51,18 @@ head(dat)
 model <- glm(dec ~ attr + sinc + intel + fun, family = binomial, data = dat)
 summary(model)
 
+# odds == p(outcome) / 1 - p(outcome)
+# ln(odds) == ln(P(outcome)/1-p(outcome))
+# to reverse, take e^ln(odds)
+
+# interpretation, the slope coefficient is in the ln scale, so a positive slope increases the ln(odds) of the response
+# variable 
+# in this model, intercept is non sensical, so no need to interprete
+
+# we use logistic regression because the response variable is binary, only 2 possible outcomes;
+# linear regression doesn't make much sense
+
+
 # attraction
 mdat <- melt(dat, id.vars = c("attr"),
              measure.vars = c("dec"))
@@ -87,13 +99,24 @@ ggplot(cdat_f, aes(fun, dec)) + geom_point() + geom_smooth(method = 'glm', se = 
 #    someone again. Discuss the fitted model.
 
 # Does not converge
+# adding a random intercept per participant (iid is the rater) rating
+# one person might have a tendency to say yes/no in general regardless of predictor
 model_mixed <- glmer(dec ~ attr + sinc + intel + fun + (1|iid), 
                      family = 'binomial', data = dat)
-
-# Converges
-model_mixed <- glmer(dec ~ attr + sinc + intel + fun + (1|id) + (1|iid), 
-                   family = 'binomial', data = dat)
 summary(model_mixed)
+# Converges
+model_mixed_c <- glmer(dec ~ attr + sinc + intel + fun + (1|id) + (1|iid), 
+                   family = 'binomial', data = dat)
+summary(model_mixed_c)
+
+# pid is the person being rated
+model_mixed_rated <- glmer(dec ~ attr + sinc + intel + fun + (1|iid) + (1|pid), 
+                           family = 'binomial', data = dat)
+summary(model_mixed_rated)
+
+# when comparing 2 models, if one converges and the other doesn't, pick the one that converges, even if AIC
+# score is about the same
+# usually a model that converges will likely have a lower AIC than the one that doesn't
 
 # In the general mixed effect model, all predictors are considered significant factors affecting
 # decision to follow-up date. The slopes of these variables change quite a bit, but the attraction variable
@@ -120,6 +143,20 @@ summary(model_3)
 #    coefficients for the 6 ratings to vary by the rater i. (Hint: The model will not converge when you 
 #    include many predictors as random slopes; see with how many predictors you can get the model to converge;
 #    and try out some of the tricks we have seen to see whether they affect convergence for this dataset.)
+
+# random effects:
+
+# random intercept: (1|subject) --> 1 always refers to intercept, imagine each subject having their own regression
+# line with their own intercept, but all have the same slope
+
+# random intercept & slope: (1 + fixed variable|random effect variable); each subject has their own regression line
+# with different slope and intercept
+# this is the most used model unless you have reasons not to
+
+# random slope: (fixed effect|subject or another random effect variable) ; each subject has the same intercept
+# for their regression line, but different slope.
+
+# no correlation between random intercept and slope: (1 + fixed ||random effect) this is rarely used
 
 # treating intercepts and slopes separately by random factor; does not converge
 model_mixed_2 <- glmer(dec ~ attr + sinc + intel + fun + amb + (attr||iid) + (fun||iid) + (intel||iid) + (amb||iid), 
@@ -162,6 +199,21 @@ summary(model_mixed_3)
 # math final exam, and prog is a categorical predictor variable with three levels indicating the type of program 
 # in which the students were enrolled. It is coded as 1 = "General", 2 = "Academic" and 3 = "Vocational". 
 # Let's start with loading the data and looking at some descriptive statistics.
+
+# response variable is numerical (number of awards) or count of awards (starting at 0 to inf) discrete
+# no negative values possible. thus, you cannot use linear regression (continuous value response variable)
+# if unsure, it also helps to plot a histogram/density plot of your data to see what type of distribution it
+# resembles
+
+# model families: linear (response variable continuous and non-binary)
+# assumptions for linear regression: normally distributed  residuals, homoschedasticity (homogeneity of variances)
+# relationship between predictor and response variables has to be LINEAR
+
+# logistic (binary response variable)
+# poisson (response variable is discrete, e.g. count)
+
+# you use regression because you want to PREDICT outcomes in relation to a data point you do not have
+# an extrapolation based on a model from existing to predict an outcome from unknown data
 
 p = read.csv("poisson_sim.csv", sep=";")
 summary(p)
