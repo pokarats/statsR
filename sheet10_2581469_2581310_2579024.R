@@ -12,18 +12,18 @@
 
 
 ## Please write below your (and your teammates) name, matriculation number. 
+
 ## Name: Noon Pokaratsiri Goldstein, Pauline Sander, Axel Allen
 ## Matriculation number: 2581469, 2581310, 2579024
 
-## Change the name of the file by adding your matriculation numbers
-## (exercise0N_firstID_secondID_thirdID.R)
-
 ######################################################################################################################
+
 library(lme4)
 library(lattice)
 library(Matrix)
 library(ggplot2)
 library(reshape2)
+
 
 ####
 #Part 1
@@ -45,6 +45,7 @@ library(reshape2)
 #    abbreviations stand for.
 #    Also, please plot the data in order to inspect it, and discuss the importance of attractiveness, compatibility, and so 
 #    forth in this predictive model.
+
 dat = read.csv('SpeedDatingData.csv')
 head(dat)
 
@@ -144,6 +145,7 @@ summary(model_3)
 #    include many predictors as random slopes; see with how many predictors you can get the model to converge;
 #    and try out some of the tricks we have seen to see whether they affect convergence for this dataset.)
 
+
 # random effects:
 
 # random intercept: (1|subject) --> 1 always refers to intercept, imagine each subject having their own regression
@@ -190,6 +192,7 @@ summary(model_mixed_3)
 # attraction rating, the expected likelihood of a decision to follow-up date increases by 0.92150 units. For each
 # unit increase in fun rating, the expected likelihood of a decision to follow-up date increases by 0.6266 units.
 
+
 ####
 #Part 2
 ####
@@ -199,6 +202,7 @@ summary(model_mixed_3)
 # math final exam, and prog is a categorical predictor variable with three levels indicating the type of program 
 # in which the students were enrolled. It is coded as 1 = "General", 2 = "Academic" and 3 = "Vocational". 
 # Let's start with loading the data and looking at some descriptive statistics.
+
 
 # response variable is numerical (number of awards) or count of awards (starting at 0 to inf) discrete
 # no negative values possible. thus, you cannot use linear regression (continuous value response variable)
@@ -216,9 +220,16 @@ summary(model_mixed_3)
 # an extrapolation based on a model from existing to predict an outcome from unknown data
 
 p = read.csv("poisson_sim.csv", sep=";")
+
+#p <- within(p, {
+#  prog <- factor(prog, levels=1:3, labels=c("General", "Academic", "Vocational"))
+#  id <- factor(id)
+#})
+
 summary(p)
 
 #(6) Plot the data to see whether program type and math final exam score seem to affect the number of awards.
+
 
 library(ggplot2)
 plot <- ggplot(p, aes(x = math, y = num_awards, color = prog)) + geom_point()
@@ -253,3 +264,4 @@ summary(mod_gaussian)
 AIC(mod, mod_gaussian)
 # clearly the non-gaussian model has a signficantly better fit as the AIC score is almost 200 points lower than
 # the gaussian model.
+

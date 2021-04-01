@@ -1,2 +1,2 @@
 # statsR
-Stats mit R homework
+Stats mit R WS 2019/2020 Assignments
